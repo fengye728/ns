@@ -27,13 +27,13 @@ int __stdcall nxCoreCallbackForTrade(const NxCoreSystem* pNxCoreSys, const NxCor
 	//NxCoreTradeReader* pReader = (NxCoreTradeReader *)pNxCoreSys->UserData;
 	NxCoreTradeReader* pReader = reader;
 #ifdef NSIGNAL_DEBUG_
-	unsigned static char preSec;
+	unsigned static char preMin;
 	static clock_t preTime;
-	if (t.Second != preSec)
+	if (t.Minute != preMin)
 	{
 		auto nowTime = clock();
-		cout << (int)t.Hour << " : " << (int)t.Minute << " : " << (int)t.Second << "\t" << (nowTime - preTime) << endl;
-		preSec = t.Second;
+		cout << (int)t.Hour << " : " << (int)t.Minute << "\tCost Time:" << (nowTime - preTime) / 1000 << "s" << endl;
+		preMin = t.Minute;
 		preTime = nowTime;
 	}
 #endif
@@ -97,8 +97,8 @@ int ProcessTapeForTrade(const char* tapeFilename, NxCoreReader* pReader)
 
 int main(int argc, char** argv)
 {
-	string tape = "C:\\NxCore\\20170421.DO.nxc";
-	string outFilename = "out";
+	string tape;
+	string outFilename;
 
 	if (argc == 3)
 	{
@@ -108,9 +108,17 @@ int main(int argc, char** argv)
 	else if (argc == 2)
 	{
 		tape = argv[1];
-		outFilename = tape + ".out";
+		outFilename = tape + ".trade";
 	}
 	clock_t beginTime = clock();
+	fstream tapeStream;
+	tapeStream.open(tape, std::ios::in);
+	if (!tapeStream) 
+	{
+		cout << tape.c_str() << " is not existed!" << endl;
+		tapeStream.close();
+		return 0;
+	}
 
 	pFs = new NxCoreOutputFileStream(outFilename);
 	reader = new NxCoreTradeReader(pFs);
