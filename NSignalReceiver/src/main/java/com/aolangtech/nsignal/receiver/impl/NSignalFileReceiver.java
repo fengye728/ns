@@ -7,9 +7,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.apache.log4j.Logger;
+
+import com.aolangtech.nsignal.exceptions.NsignalException;
 import com.aolangtech.nsignal.receiver.NSignalReceiver;
 
 public class NSignalFileReceiver implements NSignalReceiver{
+	
+	// A logger
+	private Logger logger = Logger.getLogger(NSignalFileReceiver.class);
 
 	private String filename;
 	private BufferedReader fileBr;
@@ -28,12 +34,12 @@ public class NSignalFileReceiver implements NSignalReceiver{
 	}
 
 	@Override
-	public String receiveRecord() {
+	public String receiveRecord() throws NsignalException {
 		try {
 			return fileBr.readLine();
 		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
+			logger.error("Receive records failed in receiveing!");
+			throw new NsignalException("Receive records failed in receiveing!");
 		}
 	}
 
@@ -44,7 +50,7 @@ public class NSignalFileReceiver implements NSignalReceiver{
 				fileBr.close();
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("Close the receiver failed!");
 		}
 		
 	}

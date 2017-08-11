@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aolangtech.nsignal.mappers.OptionTradeMapper">
+
+  <resultMap id="BaseResultMap" type="com.aolangtech.nsignal.models.OptionTradeModel">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="stock_symbol" property="stockSymbol" />
+    <result column="expiration" property="expiration" />
+    <result column="call_put" property="callPut" />
+    <result column="strike" property="strike" />
+    <result column="event_date" property="eventDate" />
+    <result column="event_time" property="eventTime" />
+    <result column="price" property="price" />
+    <result column="size" property="size" />
+    <result column="previous_price" property="previousPrice" />
+    <result column="ask_price" property="askPrice" />
+    <result column="trade_ask_interval" property="tradeAskInterval" />
+    <result column="ask_ask_interval" property="askAskInterval" />
+    <result column="bid_price" property="bidPrice" />
+    <result column="trade_bid_interval" property="tradeBidInterval" />
+    <result column="bid_bid_interval" property="bidBidInterval" />
+    <result column="report_exg" property="reportExg" />
+    <result column="trade_condition" property="tradeCondition" />
+    <result column="sequence_id" property="sequenceId" />
+    <result column="direction" property="direction" />
+    <result column="leg_sequence_id" property="legSequenceId" />
+    <result column="big_trade" property="bigTrade" />
+  </resultMap>
+  
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+  	SELECT *
+  	FROM ${tableName}
+  	WHERE id = ${id}
+  </select>
+  
+  <insert id="insertList">
+  	INSERT INTO ${tableName}(
+  		stock_symbol, 
+  		expiration, 
+  		call_put,
+  		strike,	
+    	event_date, 
+  		event_time, 
+  		price,
+  		size,		
+     	previous_price,
+     	
+  		ask_price, 
+  		trade_ask_interval,
+  		ask_ask_interval,
+  		
+     	bid_price, 
+  		trade_bid_interval, 
+  		bid_bid_interval,
+  		
+  		report_exg,
+  		trade_condition, 
+  		sequence_id, 
+  		direction,
+  		leg_sequence_id, 
+  		big_trade)
+  	VALUES 
+  	<foreach item="item" collection="recordList" separator=",">
+        (
+        ${item.stockSymbol},
+        ${item.expiration},
+        ${item.callPut},
+        ${item.strike},
+        ${item.eventDate},
+        ${item.eventTime},
+        ${item.price},
+        ${item.size},
+        ${item.previousPrice},
+        
+        ${item.askPrice},
+        ${item.tradeAskInterval},
+        ${item.askAskInterval},
+        
+        ${item.bidPrice},
+        ${item.tradeBidInterval},
+        ${item.bidBidInterval},
+        
+        ${item.reportExg},
+        ${item.tradeCondition},
+        ${item.sequenceId},
+        ${item.direction},
+        ${item.legSequenceId},
+        ${item.bigTrade}
+        )
+  	</foreach>
+  </insert>
+  
+</mapper>
