@@ -8,7 +8,7 @@
     <result column="expiration" property="expiration" />
     <result column="call_put" property="callPut" />
     <result column="strike" property="strike" />
-    <result column="event_date" property="eventDate" />
+    <result column="event_day" property="eventDay" />
     <result column="event_time" property="eventTime" />
     <result column="price" property="price" />
     <result column="size" property="size" />
@@ -20,27 +20,19 @@
     <result column="trade_bid_interval" property="tradeBidInterval" />
     <result column="bid_bid_interval" property="bidBidInterval" />
     <result column="report_exg" property="reportExg" />
-    <result column="trade_condition" property="tradeCondition" />
+    <result column="condition" property="condition" />
     <result column="sequence_id" property="sequenceId" />
     <result column="direction" property="direction" />
     <result column="leg_sequence_id" property="legSequenceId" />
     <result column="big_trade" property="bigTrade" />
   </resultMap>
   
-  
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
-  	SELECT *
-  	FROM ${tableName}
-  	WHERE id = ${id}
-  </select>
-  
-  <insert id="insertList">
-  	INSERT INTO ${tableName}(
-  		stock_symbol, 
+  <sql id="BaseColumnList">
+   		stock_symbol, 
   		expiration, 
   		call_put,
   		strike,	
-    	event_date, 
+    	event_day, 
   		event_time, 
   		price,
   		size,		
@@ -55,38 +47,73 @@
   		bid_bid_interval,
   		
   		report_exg,
-  		trade_condition, 
+  		condition, 
   		sequence_id, 
   		direction,
   		leg_sequence_id, 
-  		big_trade)
+  		big_trade
+  </sql>
+  
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+  	SELECT *
+  	FROM ${tableName}
+  	WHERE id = ${id}
+  </select>
+  
+  <insert id="insertList" keyColumn="id" >
+  	INSERT INTO ${tableName}(
+		<include refid="BaseColumnList"></include>
+	)
   	VALUES 
   	<foreach item="item" collection="recordList" separator=",">
         (
-        ${item.stockSymbol},
-        ${item.expiration},
-        ${item.callPut},
-        ${item.strike},
-        ${item.eventDate},
-        ${item.eventTime},
-        ${item.price},
-        ${item.size},
-        ${item.previousPrice},
+        #{item.stockSymbol},
+        #{item.expiration},
+        #{item.callPut},
+        #{item.strike},
+        #{item.eventDay},
+        #{item.eventTime},
+        #{item.price},
+        #{item.size},
+        #{item.previousPrice},
         
-        ${item.askPrice},
-        ${item.tradeAskInterval},
-        ${item.askAskInterval},
+        #{item.askPrice},
+        #{item.tradeAskInterval},
+        #{item.askAskInterval},
         
-        ${item.bidPrice},
-        ${item.tradeBidInterval},
-        ${item.bidBidInterval},
+        #{item.bidPrice},
+        #{item.tradeBidInterval},
+        #{item.bidBidInterval},
         
-        ${item.reportExg},
-        ${item.tradeCondition},
-        ${item.sequenceId},
-        ${item.direction},
-        ${item.legSequenceId},
-        ${item.bigTrade}
+        #{item.reportExg},
+        #{item.condition},
+        #{item.sequenceId},
+        <choose>
+        	<when test=" item.direction == null">
+        		NULL,
+        	</when>
+        	<otherwise>
+        		${item.direction},
+        	</otherwise>
+        </choose>
+	        
+        <choose>
+        	<when test=" item.legSequenceId == null">
+        		NULL,
+        	</when>
+        	<otherwise>
+        		${item.legSequenceId},
+        	</otherwise>
+        </choose>     
+        <choose>
+        	<when test=" item.bigTrade == null">
+        		NULL
+        	</when>
+        	<otherwise>
+        		${item.bigTrade}
+        	</otherwise>
+        </choose>
         )
   	</foreach>
   </insert>

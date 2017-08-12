@@ -23,6 +23,7 @@ public class TradeDirectInferUtil {
 	public static void tickTest(OptionTradeModel lastTrade, OptionTradeModel curTrade) {
 		if(null == lastTrade) {
 			curTrade.setTickTestTD(TickTestTradeCategory.UNKNOWN);
+			return ;
 		}
 		if(lastTrade.getAskPrice() < curTrade.getPrice()) {
 			curTrade.setTickTestTD(TickTestTradeCategory.UPTICK);
@@ -48,8 +49,16 @@ public class TradeDirectInferUtil {
 	 * @param record
 	 */
 	public static void bidAskTest(OptionTradeModel record) {
-		double mid = (record.getAskPrice() + record.getBidPrice()) / 2;
-		record.setBidAskTD((int)((record.getPrice() - mid) / mid * 100));
+		
+		if(record.getPrice() <= record.getBidPrice())
+			record.setBidAskTD(-100);
+		else if(record.getPrice() >= record.getAskPrice()) {
+			record.setBidAskTD(100);
+		} else {
+			double mid = (record.getAskPrice() + record.getBidPrice()) / 2;
+			double gap = record.getAskPrice() - record.getBidPrice();
+			record.setBidAskTD((int)((record.getPrice() - mid) / gap * 100));
+		}
 	}
 	
 	public static void findTradeLeg(List<OptionTradeModel> list) {

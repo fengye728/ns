@@ -15,7 +15,7 @@ public class OptionTradeModel {
 	
 	private Double strike;		// strike price
 	
-	private Integer eventDate;		// yyMMdd
+	private Integer eventDay;		// yyMMdd
 		
 	private Integer eventTime;		// hhmmsslll
 	
@@ -39,7 +39,7 @@ public class OptionTradeModel {
 	
 	private Short reportExg;	// The exchange putting order
 	
-	private Integer tradeCondition;		// the trade condition
+	private Integer condition;		// the trade condition
 	
 	private Long sequenceId;
 
@@ -67,9 +67,9 @@ public class OptionTradeModel {
 	 * 
 	 * @return
 	 */
-	public String getQuarterByDate() {
-		int year = this.getEventDate() / 10000;
-		int quarterInYear = ((this.getEventDate() / 1000) % 10 - 1)  / 4 + 1;
+	public String getQuarter() {
+		int year = this.eventDay / 10000;
+		int quarterInYear = ((this.eventDay / 1000) % 10 - 1)  / 4 + 1;
 		
 		return String.valueOf(year) + String.valueOf(quarterInYear);
 	}
@@ -105,7 +105,7 @@ public class OptionTradeModel {
 			result.bidBidInterval = Integer.valueOf(fields[10]);
 			
 			result.reportExg = Short.valueOf(fields[11]);
-			result.tradeCondition = Integer.valueOf(fields[12]);
+			result.condition = Integer.valueOf(fields[12]);
 			result.sequenceId = Long.valueOf(fields[13]);
 			
 			return result;
@@ -126,7 +126,7 @@ public class OptionTradeModel {
 	 */
 	private static void parseDate(OptionTradeModel result, String date){
 		// Input date format: yy-MM-dd hh:mm:ss.lll, length: 21
-		result.eventDate = getDigit(date.charAt(0)) * 100000 + getDigit(date.charAt(1)) * 10000	// yy
+		result.eventDay = getDigit(date.charAt(0)) * 100000 + getDigit(date.charAt(1)) * 10000	// yy
 				+ getDigit(date.charAt(3)) * 1000 + getDigit(date.charAt(4)) * 100				// MM
 				+ getDigit(date.charAt(6)) * 10 + getDigit(date.charAt(7));						// dd
 		
@@ -222,14 +222,6 @@ public class OptionTradeModel {
 		this.strike = strike;
 	}
 
-	public Integer getEventDate() {
-		return eventDate;
-	}
-
-	public void setEventDate(Integer eventDate) {
-		this.eventDate = eventDate;
-	}
-
 	public Integer getEventTime() {
 		return eventTime;
 	}
@@ -318,14 +310,6 @@ public class OptionTradeModel {
 		this.reportExg = reportExg;
 	}
 
-	public Integer getTradeCondition() {
-		return tradeCondition;
-	}
-
-	public void setTradeCondition(Integer tradeCondition) {
-		this.tradeCondition = tradeCondition;
-	}
-
 	public Long getSequenceId() {
 		return sequenceId;
 	}
@@ -372,6 +356,22 @@ public class OptionTradeModel {
 
 	public void setBidAskTD(int bidAskTD) {
 		this.bidAskTD = bidAskTD;
+	}
+
+	public Integer getEventDay() {
+		return eventDay;
+	}
+
+	public void setEventDay(Integer eventDay) {
+		this.eventDay = eventDay;
+	}
+
+	public Integer getCondition() {
+		return condition;
+	}
+
+	public void setCondition(Integer condition) {
+		this.condition = condition;
 	}
 	
 }

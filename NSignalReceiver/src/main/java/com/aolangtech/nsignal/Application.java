@@ -1,16 +1,12 @@
 package com.aolangtech.nsignal;
 
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.apache.ibatis.datasource.pooled.PooledDataSource;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
-import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.TransactionFactory;
@@ -18,10 +14,10 @@ import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.aolangtech.nsignal.constants.CommonConstants;
-import com.aolangtech.nsignal.mappers.OptionTradeMapper;
-import com.aolangtech.nsignal.models.OptionTradeModel;
 import com.aolangtech.nsignal.receiver.NSignalReceiver;
+import com.aolangtech.nsignal.receiver.OptionTradeHandler;
 import com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver;
+import com.aolangtech.nsignal.receiver.impl.OptionTradeHandlerImpl;
 
 public class Application {
 	
@@ -55,20 +51,11 @@ public class Application {
 		// Init
 		init();
 		
-		SqlSession session = sqlSessionFactory.openSession();
+		NSignalReceiver receiver = new NSignalFileReceiver("D:\\test\\out24");
 		
-		OptionTradeMapper otMapper = session.getMapper(OptionTradeMapper.class);
+		OptionTradeHandler handler = new OptionTradeHandlerImpl(receiver);
 		
-		//OptionTradeModel obj = otMapper.selectByPrimaryKey("option_trade_163", 1L);
-		
-		List<OptionTradeModel> recordList = new ArrayList<>();
-		
-		OptionTradeModel t1 = new OptionTradeModel();
-		t1.setStockSymbol("Test1");
-		
-		recordList.add(t1);
-		
-		otMapper.insertList("option_trade_163", recordList);
+		handler.run();
 		
 	} 
 	

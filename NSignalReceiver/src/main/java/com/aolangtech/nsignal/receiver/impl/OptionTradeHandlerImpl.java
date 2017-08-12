@@ -11,6 +11,8 @@ import com.aolangtech.nsignal.exceptions.NsignalException;
 import com.aolangtech.nsignal.models.OptionTradeModel;
 import com.aolangtech.nsignal.receiver.NSignalReceiver;
 import com.aolangtech.nsignal.receiver.OptionTradeHandler;
+import com.aolangtech.nsignal.services.OptionTradeService;
+import com.aolangtech.nsignal.services.impl.OptionTradeServiceImpl;
 import com.aolangtech.nsignal.utils.TradeDirectInferUtil;
 
 public class OptionTradeHandlerImpl implements OptionTradeHandler {
@@ -66,14 +68,21 @@ public class OptionTradeHandlerImpl implements OptionTradeHandler {
 		
 		// TODO set big trade flag
 		
+		// persist into database
+		this.persist();
+		
+		// close the receiver
+		this.receiver.close();
 		
 		logger.info("The count of error records is " + errorCount);
 	}
 
 	@Override
 	public void persist() {
-		// TODO Auto-generated method stub
-
+		OptionTradeService optionTradeService = new OptionTradeServiceImpl();
+		for(List<OptionTradeModel> list : symbolMap.values()) {
+			optionTradeService.insertList(list);
+		}
 	}
 	
 	/**
