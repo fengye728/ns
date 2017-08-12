@@ -31,9 +31,11 @@ dependencies {
 mainClassName = 'Application'
 
 flyway {
-	url = 'jdbc:postgresql://localhost:5432/aolang'
-	user = 'postgres'
-	password = 'al'
+	// url = 'jdbc:postgresql://localhost:5432/aolang'
+	// password = 'al'
+	url = 'jdbc:postgresql://192.168.0.249:5432/aolang'
+	password = 'AL'
 	
+	user = 'postgres'
 	locations = ['filesystem:sql/migrations']
 }

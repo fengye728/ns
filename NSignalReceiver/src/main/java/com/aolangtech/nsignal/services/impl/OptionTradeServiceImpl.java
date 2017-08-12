@@ -18,7 +18,7 @@ import com.aolangtech.nsignal.services.OptionTradeService;
 
 public class OptionTradeServiceImpl implements OptionTradeService {
 	
-	private static final int MAX_INSERT_RECORDS_NUM = 100;
+	private static final int MAX_INSERT_RECORDS_NUM = 1000;
 	
 	private static String tablePrefix = "option_trade_";
 	
