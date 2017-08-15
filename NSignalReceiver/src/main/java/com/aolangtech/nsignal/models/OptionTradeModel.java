@@ -45,7 +45,7 @@ public class OptionTradeModel {
 
 	private String direction;		// The trade direction 
 	
-	private Long legSequenceId;		// The sequenceId of the other le
+	private Long legSequenceId;		// The sequenceId of the other leg
 	
 	private Boolean bigTrade;
 	
@@ -59,7 +59,38 @@ public class OptionTradeModel {
 	 * 
 	 */
 	public void formDirection() {
-		// TODO Form the direction
+		final String BUY = "Buy";
+		final String SELL = "Sell";
+		final String UNKNOWN = "Un";
+		
+		final String UNIT = "%";
+		
+		if(this.bidAskTD < 0) {
+			// bid-ask sell
+			
+			this.direction = BUY + (-this.bidAskTD) + UNIT;
+			
+		} else if(this.bidAskTD > 0) {
+			// bid-ask buy
+			
+			this.direction = SELL + this.bidAskTD + UNIT;
+			
+		} else {
+			// bid-ask is invalid, then use tick test
+			
+			switch(this.tickTestTD) {
+			case UPTICK:
+			case ZERO_UPTICK:
+				this.direction = BUY + 0 + UNIT;
+				break;
+			case DOWNTICK:
+			case ZERO_DOWNTICK:
+				this.direction = SELL + 0 + UNIT;
+				break;
+			case UNKNOWN:
+				this.direction = UNKNOWN + 0 + UNIT;
+			}
+		}
 	}
 	
 	/**
