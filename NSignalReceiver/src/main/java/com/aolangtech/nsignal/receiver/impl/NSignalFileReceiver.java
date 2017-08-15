@@ -33,15 +33,19 @@ public class NSignalFileReceiver implements NSignalReceiver{
 		
 		try {
 			String line;
-			
+			long recordCount = 0;
 			while((line = this.receiveRecord()) != null) {
 				handler.handleOneLineRecord(line);
+				++recordCount;
 			}
+			
+			logger.info("Load records success. Count: " + recordCount);
 			// after process
 			handler.processForMap();
 			
 			// persist data
-			handler.persist();
+			recordCount = handler.persist();
+			logger.info("Persist " + handler.getOptionTradeDate() + " records success. Count: " + recordCount);
 			
 		} catch (NsignalException e) {
 			e.printStackTrace();

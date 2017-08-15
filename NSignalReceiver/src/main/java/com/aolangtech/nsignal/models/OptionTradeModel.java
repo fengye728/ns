@@ -69,7 +69,7 @@ public class OptionTradeModel {
 	 */
 	public String getQuarter() {
 		int year = this.eventDay / 10000;
-		int quarterInYear = ((this.eventDay / 1000) % 10 - 1)  / 4 + 1;
+		int quarterInYear = ((this.eventDay % 10000) / 100) / 4 + 1;
 		
 		return String.valueOf(year) + String.valueOf(quarterInYear);
 	}

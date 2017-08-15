@@ -1,6 +1,7 @@
 package com.aolangtech.nsignal.utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,19 @@ public class OptionTradeHandlerUtil{
 	}
 	
 	/**
+	 * Get the date of option trade info map stored.
+	 * 
+	 * @return
+	 */
+	public int getOptionTradeDate() {
+		Collection<List<OptionTradeModel>> values = symbolMap.values();
+		if(!values.isEmpty())
+			return values.iterator().next().get(0).getEventDay();
+		else
+			return 0;
+	}
+	
+	/**
 	 * Process all lists in map when full data set is in map.
 	 * 
 	 */
@@ -73,27 +87,22 @@ public class OptionTradeHandlerUtil{
 		// TODO set big trade flag
 	}
 	
+
 	/**
-	 * Persist the data set in symbolMap into database.
+	 * Persist all records in map into database.
 	 * 
+	 * @return The number of records persisted.
 	 */
-	public void persist() {
+	public long persist() {
 		OptionTradeService optionTradeService = new OptionTradeServiceImpl();
-		long orignCount = 0;
 		long persistCount = 0;
-		for(List<OptionTradeModel> list : symbolMap.values()) {
-			orignCount += list.size();
-			
-			persistCount += optionTradeService.insertList(list);
-			
-			if(orignCount != persistCount)
-			{
-				logger.error("Count fail:" + list.get(0).getStockSymbol());
-			}
-		}
 		
-		logger.info("Original count:" + orignCount);
-		logger.info("Persist count:" + orignCount);
+		for(List<OptionTradeModel> list : symbolMap.values()) {			
+			persistCount += optionTradeService.insertList(list);
+
+		}
+		return persistCount;
+
 	}
 	
 	/**

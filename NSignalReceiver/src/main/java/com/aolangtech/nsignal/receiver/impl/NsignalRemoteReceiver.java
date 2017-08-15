@@ -20,6 +20,8 @@ import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 
 public class NsignalRemoteReceiver implements NSignalReceiver {
+	
+	private Logger logger = Logger.getLogger(NsignalRemoteReceiver.class);
 
 	private ServerBootstrap bootstrap;
 	
@@ -45,6 +47,9 @@ public class NsignalRemoteReceiver implements NSignalReceiver {
 		
 		try {
 			ChannelFuture future = bootstrap.bind(Integer.valueOf(Application.config.getServerPort())).sync();
+			
+			logger.info("NSignal Receiver Server run on port: " + Application.config.getServerPort());
+			
 			future.channel().closeFuture().sync();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -69,24 +74,31 @@ public class NsignalRemoteReceiver implements NSignalReceiver {
 		
 		private OptionTradeHandlerUtil handler;
 		
+		private long readCount;
+		
 	    @Override
 	    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 	        String record = (String) msg;
-	        handler.handleOneLineRecord(record);     
+	        if(handler.handleOneLineRecord(record))
+	        	++readCount;
 	    }
 	    
 	    @Override
 	    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+	    	// initialization
 	    	handler = new OptionTradeHandlerUtil();
-	        logger.info("Channel is active!" );
+	    	readCount = 0;
+	        logger.info("Active channel established with client: " + ctx.channel().remoteAddress());
 	    }
 
 	    @Override
 	    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+	    	logger.info("Load records success. Count: " + readCount);
 	    	handler.processForMap();
 	    	// persist all records
-	    	handler.persist();
-	    	logger.info("Channel is inactive!");
+	    	Long count = handler.persist();
+	    	logger.info("Persist " + handler.getOptionTradeDate() + " records success. Count: " + count);
+	    	logger.info("Inactive Channel established with client: " + ctx.channel().remoteAddress());
 	    }
 		
 	}
