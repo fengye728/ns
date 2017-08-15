@@ -14,10 +14,9 @@ public class NsignalConfig {
 
 	private static Logger logger = Logger.getLogger(NsignalConfig.class);
 	
-	private String remoteUrl;
+	//private String serverUrl;
 	
-	private String remotePort;
-	
+	private String serverPort;
 	
 	private String dbDriverClassName;
 	
@@ -40,8 +39,8 @@ public class NsignalConfig {
 		}
 		
 		// get property value
-		this.remoteUrl = configProp.getProperty(CommonConstants.PropertyName.REMOTE_URL.toString(), CommonConstants.PropertyName.REMOTE_URL.getValue());
-		this.remotePort = configProp.getProperty(CommonConstants.PropertyName.REMOTE_PORT.toString(), CommonConstants.PropertyName.REMOTE_PORT.getValue());
+		//this.remoteUrl = configProp.getProperty(CommonConstants.PropertyName.REMOTE_URL.toString(), CommonConstants.PropertyName.REMOTE_URL.getValue());
+		this.serverPort = configProp.getProperty(CommonConstants.PropertyName.SERVER_PORT.toString(), CommonConstants.PropertyName.SERVER_PORT.getValue());
 		
 		this.dbDriverClassName = configProp.getProperty(CommonConstants.PropertyName.DB_DRIVER_CLASSNAME.toString(), CommonConstants.PropertyName.DB_DRIVER_CLASSNAME.getValue());
 		this.dbUrl = configProp.getProperty(CommonConstants.PropertyName.DB_URL.toString(), CommonConstants.PropertyName.DB_URL.getValue());
@@ -50,8 +49,8 @@ public class NsignalConfig {
 		this.dbPassword = configProp.getProperty(CommonConstants.PropertyName.DB_PASSWORD.toString(), CommonConstants.PropertyName.DB_PASSWORD.getValue());
 		
 		// log porperty info
-		logger.info("Property " + CommonConstants.PropertyName.REMOTE_URL.toString() + "\t:\t" + this.remoteUrl);
-		logger.info("Property " + CommonConstants.PropertyName.REMOTE_PORT.toString() + "\t:\t" + this.remotePort);
+		//logger.info("Property " + CommonConstants.PropertyName.REMOTE_URL.toString() + "\t:\t" + this.remoteUrl);
+		logger.info("Property " + CommonConstants.PropertyName.SERVER_PORT.toString() + "\t:\t" + this.serverPort);
 		logger.info("Property " + CommonConstants.PropertyName.DB_DRIVER_CLASSNAME.toString() + "\t:\t" + this.dbDriverClassName);
 		logger.info("Property " + CommonConstants.PropertyName.DB_URL.toString() + "\t:\t" + this.dbUrl);
 		
@@ -61,37 +60,6 @@ public class NsignalConfig {
 		} catch (IOException e) {
 		}
 	}
-
-
-	public static Logger getLogger() {
-		return logger;
-	}
-
-
-	public static void setLogger(Logger logger) {
-		NsignalConfig.logger = logger;
-	}
-
-
-	public String getRemoteUrl() {
-		return remoteUrl;
-	}
-
-
-	public void setRemoteUrl(String remoteUrl) {
-		this.remoteUrl = remoteUrl;
-	}
-
-
-	public String getRemotePort() {
-		return remotePort;
-	}
-
-
-	public void setRemotePort(String remotePort) {
-		this.remotePort = remotePort;
-	}
-
 
 	public String getDbDriverClassName() {
 		return dbDriverClassName;
@@ -129,6 +97,14 @@ public class NsignalConfig {
 
 	public void setDbPassword(String dbPassword) {
 		this.dbPassword = dbPassword;
+	}
+
+	public String getServerPort() {
+		return serverPort;
+	}
+
+	public void setServerPort(String serverPort) {
+		this.serverPort = serverPort;
 	}
 	
 }

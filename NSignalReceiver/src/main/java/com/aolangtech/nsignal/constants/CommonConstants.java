@@ -16,6 +16,8 @@ public class CommonConstants {
 	
 	public final static char OPTION_TRADE_OPTION_TYPE_PUT	= 'P';
 	
+	public final static int OPTION_TRADE_RECORD_MAX_LENGTH = 1024;
+	
 	/**
 	 * The enumeration of property name and default value of configuration.
 	 * 
@@ -23,7 +25,8 @@ public class CommonConstants {
 	 *
 	 */
 	public enum PropertyName {
-		REMOTE_URL("remote.url", "localhost"), REMOTE_PORT("remote.port", "9899"),
+		//REMOTE_URL("remote.url", "localhost"), 
+		SERVER_PORT("server.port", "9899"),
 		DB_DRIVER_CLASSNAME("db.driverClassName", "org.postgresql.Driver"),DB_URL("db.url", "jdbc:postgresql://localhost:5432/aolang"), DB_USERNAME("db.username", "postgres"), DB_PASSWORD("db.password", "AL");
 		
 		private String name;

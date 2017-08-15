@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.aolangtech.nsignal.exceptions.NsignalException;
 import com.aolangtech.nsignal.receiver.NSignalReceiver;
+import com.aolangtech.nsignal.utils.OptionTradeHandlerUtil;
 
 public class NSignalFileReceiver implements NSignalReceiver{
 	
@@ -19,21 +20,60 @@ public class NSignalFileReceiver implements NSignalReceiver{
 
 	private String filename;
 	private BufferedReader fileBr;
+	private boolean isOpen;
+	
+	private OptionTradeHandlerUtil handler;
 	
 	@Override
+	public void run() {
+		if(!isOpen)
+			this.open();
+		
+		handler = new OptionTradeHandlerUtil();
+		
+		try {
+			String line;
+			
+			while((line = this.receiveRecord()) != null) {
+				handler.handleOneLineRecord(line);
+			}
+			// after process
+			handler.processForMap();
+			
+			// persist data
+			handler.persist();
+			
+		} catch (NsignalException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/**
+	 * Open the receiver.
+	 * 
+	 * @return true if open success, otherwise false.
+	 */
 	public boolean open() {
 		InputStream in;
 		try {
 			in = new FileInputStream(this.filename);
 			InputStreamReader inr = new InputStreamReader(in);
 			fileBr = new BufferedReader(inr);
+			isOpen = true;
 			return true;
 		} catch (FileNotFoundException e) {
+			isOpen = false;
 			return false;
 		}
 	}
 
-	@Override
+	/**
+	 * Receiver a option trade record of type of string line.
+	 * 
+	 * @return a record if there are records, otherwise null.
+	 * @throws NsignalException
+	 */
 	public String receiveRecord() throws NsignalException {
 		try {
 			return fileBr.readLine();
@@ -43,7 +83,9 @@ public class NSignalFileReceiver implements NSignalReceiver{
 		}
 	}
 
-	@Override
+	/**
+	 * Close the receiver.
+	 */
 	public void close() {
 		try {
 			if(fileBr != null){
@@ -52,12 +94,11 @@ public class NSignalFileReceiver implements NSignalReceiver{
 		} catch (IOException e) {
 			logger.error("Close the receiver failed!");
 		}
-		
+		isOpen = false;
 	}
 	
 	public NSignalFileReceiver(String filename) {
 		this.filename	=	filename;
-		
 	}
 
 }

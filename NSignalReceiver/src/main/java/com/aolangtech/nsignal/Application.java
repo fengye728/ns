@@ -11,15 +11,17 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
+import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.aolangtech.nsignal.constants.CommonConstants;
 import com.aolangtech.nsignal.receiver.NSignalReceiver;
-import com.aolangtech.nsignal.receiver.OptionTradeHandler;
 import com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver;
-import com.aolangtech.nsignal.receiver.impl.OptionTradeHandlerImpl;
+import com.aolangtech.nsignal.receiver.impl.NsignalRemoteReceiver;
 
 public class Application {
+	
+	private static Logger logger = Logger.getLogger(Application.class);
 	
 	// Config properties
 	public static NsignalConfig config = null;
@@ -51,12 +53,28 @@ public class Application {
 		// Init
 		init();
 		
-		NSignalReceiver receiver = new NSignalFileReceiver("D:\\test\\out24");
+		if(args.length > 1 || args.length < 1) {
+			logger.error("Argument Error: too much or too little arguments!");
+			return ;
+		}
+		boolean isRemote = false;
+		for(String arg : args) {
+			// -r means get data from remote, otherwise from local file.
+			if(arg.equals("-r"))
+			{
+				isRemote = true;
+			}
+		}
 		
-		OptionTradeHandler handler = new OptionTradeHandlerImpl(receiver);
-		
-		handler.run();
-		
+		NSignalReceiver receiver;
+		if(isRemote) {
+			receiver = new NsignalRemoteReceiver();
+		} else {
+			receiver = new NSignalFileReceiver(args[0]);
+		}
+
+		// run receiver
+		receiver.run();
 	} 
 	
 }
