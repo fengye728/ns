@@ -91,7 +91,7 @@ public:
 
 	virtual int Write(const char* line)
 	{
-		return send(this->sockClient, line, strlen(line), 0);
+		return send(this->sockClient, line, (int)strlen(line), 0);
 	}
 
 	virtual void Close()
