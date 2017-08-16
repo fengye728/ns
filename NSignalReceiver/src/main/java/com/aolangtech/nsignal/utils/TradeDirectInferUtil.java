@@ -7,8 +7,6 @@
  */
 package com.aolangtech.nsignal.utils;
 
-import java.util.List;
-
 import com.aolangtech.nsignal.constants.CommonConstants.TickTestTradeCategory;
 import com.aolangtech.nsignal.models.OptionTradeModel;
 
@@ -59,9 +57,5 @@ public class TradeDirectInferUtil {
 			double gap = record.getAskPrice() - record.getBidPrice();
 			record.setBidAskTD((int)((record.getPrice() - mid) / gap * 100));
 		}
-	}
-	
-	public static void findTradeLeg(List<OptionTradeModel> list) {
-		
 	}
 }

@@ -48,12 +48,19 @@ public class OptionTradeServiceImpl implements OptionTradeService {
 		}
 	}
 	
-	
+	/**
+	 * Open a session and get a mapper for this session.
+	 * 
+	 * @return mapper
+	 */
 	private OptionTradeMapper openMapper() {
 		session = Application.sqlSessionFactory.openSession();
 		return session.getMapper(OptionTradeMapper.class);
 	}
 	
+	/**
+	 * Commit the trasaction and close this session.
+	 */
 	private void closeMapper() {
 		session.commit();
 		session.close();

@@ -4,8 +4,9 @@ import org.apache.log4j.Logger;
 
 import com.aolangtech.nsignal.Application;
 import com.aolangtech.nsignal.constants.CommonConstants;
+import com.aolangtech.nsignal.exceptions.NsignalException;
 import com.aolangtech.nsignal.receiver.NSignalReceiver;
-import com.aolangtech.nsignal.utils.OptionTradeHandlerUtil;
+import com.aolangtech.nsignal.utils.OptionTradeHandlerContext;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -26,7 +27,7 @@ public class NsignalRemoteReceiver implements NSignalReceiver {
 	private ServerBootstrap bootstrap;
 	
 	@Override
-	public void run() {
+	public void run() throws NsignalException{
 		
 		bootstrap = new ServerBootstrap();
 		
@@ -52,8 +53,7 @@ public class NsignalRemoteReceiver implements NSignalReceiver {
 			
 			future.channel().closeFuture().sync();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new NsignalException("Fail to start Nsignal Receiver Server on port: " + Application.config.getServerPort());
 		}
 		finally {
 			bossGroup.shutdownGracefully();
@@ -72,7 +72,7 @@ public class NsignalRemoteReceiver implements NSignalReceiver {
 
 		private final Logger logger = org.apache.log4j.Logger.getLogger(NsignalHandler.class);
 		
-		private OptionTradeHandlerUtil handler;
+		private OptionTradeHandlerContext handler;
 		
 		private long readCount;
 		
@@ -86,7 +86,7 @@ public class NsignalRemoteReceiver implements NSignalReceiver {
 	    @Override
 	    public void channelActive(ChannelHandlerContext ctx) throws Exception {
 	    	// initialization
-	    	handler = new OptionTradeHandlerUtil();
+	    	handler = new OptionTradeHandlerContext();
 	    	readCount = 0;
 	        logger.info("Active channel established with client: " + ctx.channel().remoteAddress());
 	    }

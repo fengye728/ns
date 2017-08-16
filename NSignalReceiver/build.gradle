@@ -1,6 +1,10 @@
 buildscript {
+	repositories {
+		mavenCentral()
+	}
     dependencies {
         classpath(group: 'org.postgresql', name: 'postgresql', version: '42.1.4')
+		classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
     }
 }
 
@@ -11,12 +15,22 @@ plugins {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'application'
-
-version = '1.0.0-SNAPSHOT'
-sourceCompatibility = 1.8
+apply plugin: 'com.github.johnrengelman.shadow'  
 
 repositories {
 	mavenCentral()
+}
+
+shadowJar {
+	baseName = 'NSignalReceiver'
+	classifier = null
+	version = null
+	dependencies {
+		include(dependency('org.postgresql:postgresql:42.1.4'))
+		include(dependency(group: 'org.mybatis', name: 'mybatis', version: '3.4.1'))
+		include(dependency('log4j:log4j:1.2.17'))
+		include(dependency(group: 'io.netty', name: 'netty-all', version: '4.1.6.Final'))
+	}
 }
 
 dependencies {
@@ -29,8 +43,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
-// Define the main class for the application
-mainClassName = 'Application'
 
 flyway {
 	// url = 'jdbc:postgresql://localhost:5432/aolang'
@@ -41,3 +53,10 @@ flyway {
 	user = 'postgres'
 	locations = ['filesystem:sql/migrations']
 }
+
+version = '1.0.0-SNAPSHOT'
+sourceCompatibility = 1.8
+
+// Define the main class for the application
+mainClassName = 'com.aolangtech.nsignal.Application'
+applicationName = 'NSignalReceiver'

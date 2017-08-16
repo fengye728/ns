@@ -33,9 +33,9 @@ public class NsignalConfig {
 			configInStream = new FileInputStream(CommonConstants.APPLICATION_CONFIG_FILE_NAME);
 			configProp.load(configInStream);
 		} catch (FileNotFoundException e) {
-			logger.error(CommonConstants.APPLICATION_CONFIG_FILE_NAME + " is not existed! Now will use default property values!");
+			logger.info(CommonConstants.APPLICATION_CONFIG_FILE_NAME + " is not existed! Now will use default property values!");
 		} catch(IOException e) {
-			logger.error("Read file " + CommonConstants.APPLICATION_CONFIG_FILE_NAME + " failed! Now will use default property values!");
+			logger.info("Read file " + CommonConstants.APPLICATION_CONFIG_FILE_NAME + " failed! Now will use default property values!");
 		}
 		
 		// get property value
@@ -48,11 +48,11 @@ public class NsignalConfig {
 		this.dbUsername = configProp.getProperty(CommonConstants.PropertyName.DB_USERNAME.toString(), CommonConstants.PropertyName.DB_USERNAME.getValue());
 		this.dbPassword = configProp.getProperty(CommonConstants.PropertyName.DB_PASSWORD.toString(), CommonConstants.PropertyName.DB_PASSWORD.getValue());
 		
-		// log porperty info
+		// log property info
 		//logger.info("Property " + CommonConstants.PropertyName.REMOTE_URL.toString() + "\t:\t" + this.remoteUrl);
-		logger.info("Property " + CommonConstants.PropertyName.SERVER_PORT.toString() + "\t:\t" + this.serverPort);
-		logger.info("Property " + CommonConstants.PropertyName.DB_DRIVER_CLASSNAME.toString() + "\t:\t" + this.dbDriverClassName);
-		logger.info("Property " + CommonConstants.PropertyName.DB_URL.toString() + "\t:\t" + this.dbUrl);
+		logger.info("Property " + CommonConstants.PropertyName.SERVER_PORT.toString() + " : " + this.serverPort);
+		logger.info("Property " + CommonConstants.PropertyName.DB_DRIVER_CLASSNAME.toString() + " : " + this.dbDriverClassName);
+		logger.info("Property " + CommonConstants.PropertyName.DB_URL.toString() + " : " + this.dbUrl);
 		
 		// close input stream
 		try {

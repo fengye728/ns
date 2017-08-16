@@ -6,15 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-
 import com.aolangtech.nsignal.models.OptionTradeModel;
 import com.aolangtech.nsignal.services.OptionTradeService;
 import com.aolangtech.nsignal.services.impl.OptionTradeServiceImpl;
 
-public class OptionTradeHandlerUtil{
-
-	private Logger logger = Logger.getLogger(OptionTradeHandlerUtil.class);
+public class OptionTradeHandlerContext{
 	
 	private Map<String, List<OptionTradeModel>> symbolMap = new HashMap<>();;	//  <Stock symbol, List of trade>
 	
@@ -67,7 +63,7 @@ public class OptionTradeHandlerUtil{
 	 */
 	public void processForMap() {
 
-		findTradeLeg();
+		combineTradeLeg();
 		setBigTradeFlag();
 	}
 
@@ -75,7 +71,7 @@ public class OptionTradeHandlerUtil{
 	 * Find trade leg in symbolMap.
 	 * 
 	 */
-	private void findTradeLeg() {
+	private void combineTradeLeg() {
 		// TODO find trade leg
 	}
 	

@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.aolangtech.nsignal.constants.CommonConstants;
+import com.aolangtech.nsignal.exceptions.NsignalException;
 import com.aolangtech.nsignal.receiver.NSignalReceiver;
 import com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver;
 import com.aolangtech.nsignal.receiver.impl.NsignalRemoteReceiver;
@@ -74,7 +75,11 @@ public class Application {
 		}
 
 		// run receiver
-		receiver.run();
+		try {
+			receiver.run();
+		} catch (NsignalException e) {
+			logger.error(e.getContent());
+		}
 	} 
 	
 }
