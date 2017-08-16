@@ -68,12 +68,12 @@ public class OptionTradeModel {
 		if(this.bidAskTD < 0) {
 			// bid-ask sell
 			
-			this.direction = BUY + (-this.bidAskTD) + UNIT;
+			this.direction = SELL + (-this.bidAskTD) + UNIT;
 			
 		} else if(this.bidAskTD > 0) {
 			// bid-ask buy
 			
-			this.direction = SELL + this.bidAskTD + UNIT;
+			this.direction = BUY + this.bidAskTD + UNIT;
 			
 		} else {
 			// bid-ask is invalid, then use tick test
@@ -81,14 +81,14 @@ public class OptionTradeModel {
 			switch(this.tickTestTD) {
 			case UPTICK:
 			case ZERO_UPTICK:
-				this.direction = BUY + 0 + UNIT;
+				this.direction = BUY + "0" + UNIT;
 				break;
 			case DOWNTICK:
 			case ZERO_DOWNTICK:
-				this.direction = SELL + 0 + UNIT;
+				this.direction = SELL + "0" + UNIT;
 				break;
 			case UNKNOWN:
-				this.direction = UNKNOWN + 0 + UNIT;
+				this.direction = UNKNOWN + "0" + UNIT;
 			}
 		}
 	}
@@ -100,7 +100,7 @@ public class OptionTradeModel {
 	 */
 	public String getQuarter() {
 		int year = this.eventDay / 10000;
-		int quarterInYear = ((this.eventDay % 10000) / 100) / 4 + 1;
+		int quarterInYear = ((this.eventDay % 10000) / 100 - 1) / 3 + 1;
 		
 		return String.valueOf(year) + String.valueOf(quarterInYear);
 	}

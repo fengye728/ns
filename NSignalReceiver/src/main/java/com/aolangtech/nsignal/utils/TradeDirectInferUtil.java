@@ -23,6 +23,7 @@ public class TradeDirectInferUtil {
 			curTrade.setTickTestTD(TickTestTradeCategory.UNKNOWN);
 			return ;
 		}
+		
 		if(lastTrade.getAskPrice() < curTrade.getPrice()) {
 			curTrade.setTickTestTD(TickTestTradeCategory.UPTICK);
 		}
@@ -30,11 +31,18 @@ public class TradeDirectInferUtil {
 			curTrade.setTickTestTD(TickTestTradeCategory.DOWNTICK);
 		}
 		else {
-			if(lastTrade.getTickTestTD().equals(TickTestTradeCategory.DOWNTICK) || lastTrade.getTickTestTD().equals(TickTestTradeCategory.ZERO_DOWNTICK)) {
+			switch(lastTrade.getTickTestTD()) {
+			case DOWNTICK:
+			case ZERO_DOWNTICK:
 				curTrade.setTickTestTD(TickTestTradeCategory.ZERO_DOWNTICK);
-			}
-			else {
+				break;
+			case ZERO_UPTICK:
+			case UPTICK:
 				curTrade.setTickTestTD(TickTestTradeCategory.ZERO_UPTICK);
+				break;
+			case UNKNOWN:
+				curTrade.setTickTestTD(TickTestTradeCategory.UNKNOWN);
+				break;
 			}
 		}
 	}
@@ -53,9 +61,12 @@ public class TradeDirectInferUtil {
 		else if(record.getPrice() >= record.getAskPrice()) {
 			record.setBidAskTD(100);
 		} else {
-			double mid = (record.getAskPrice() + record.getBidPrice()) / 2;
-			double gap = record.getAskPrice() - record.getBidPrice();
-			record.setBidAskTD((int)((record.getPrice() - mid) / gap * 100));
+			int ask = (int)(record.getAskPrice() * 100);
+			int bid = (int)(record.getBidPrice() * 100);
+			int price = (int)(record.getPrice() * 100);
+
+			int td = (2 * price - ask - bid) * 100 / (ask - bid);
+			record.setBidAskTD(td);
 		}
 	}
 }

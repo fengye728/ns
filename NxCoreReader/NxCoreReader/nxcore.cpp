@@ -186,6 +186,22 @@ bool readProperties(string& url, unsigned short& port)
 	return true;
 }
 
+bool isFileExist(string filename)
+{
+	// open file
+	ifstream infile;
+	infile.open(filename);
+	if (!infile.is_open())
+	{
+		return false;
+	}
+	else
+	{
+		infile.close();
+		return true;
+	}
+}
+
 int main(int argc, char** argv)
 {
 	const char REMOTE[] = "-r";
@@ -251,7 +267,6 @@ int main(int argc, char** argv)
 			if (otherArgc == 1)
 			{
 				tape = firstArg;
-
 			}
 			else if(otherArgc < 1)
 			{
@@ -309,6 +324,7 @@ int main(int argc, char** argv)
 			if (otherArgc == 1)
 			{
 				tape = firstArg;
+
 				outFilename = tape + ".trade";
 			}
 			else if (otherArgc == 2)
@@ -336,6 +352,17 @@ int main(int argc, char** argv)
 		// get file output stream
 		pFs = new NxCoreOutputFileStream(outFilename);
 	}
+
+	// check if tape file exist
+	if (!realTimeStatus)
+	{
+		if (!isFileExist(tape))
+		{
+			cout << tape << " is not existed!" << endl;
+			return 0;
+		}
+	}
+
 	clock_t beginTime = clock();
 
 	reader = new NxCoreTradeReader(pFs);
@@ -348,8 +375,15 @@ int main(int argc, char** argv)
 	}
 	else
 	{
-		ProcessTapeForTrade(tape.c_str(), reader);
-		cout << "Total time is " << (clock() - beginTime) / CLOCKS_PER_SEC / 60 << endl;
+		int result = ProcessTapeForTrade(tape.c_str(), reader);
+		switch (result)
+		{
+		case NSIGNAL_OPEN_READER_FAIL:
+			cout << "Fail to open reader!" << endl;
+			break;
+		default:
+			cout << "Total time is " << (clock() - beginTime) / CLOCKS_PER_SEC / 60 << endl;
+		}
 		delete reader;
 		delete pFs;
 		return 1;

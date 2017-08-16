@@ -78,12 +78,12 @@ public:
 
 		if (SOCKET_ERROR == sockClient)
 		{
-			printf("Socket() error: %d", WSAGetLastError());
+			printf("Socket() error: %d\n", WSAGetLastError());
 			return false;
 		}
 		if (connect(sockClient, (sockaddr*)&addrSrv, sizeof(addrSrv)) == INVALID_SOCKET)
 		{
-			printf("Connect failed: %d", WSAGetLastError());
+			printf("Connect failed: %d\n", WSAGetLastError());
 			return false;
 		}		
 		return true;

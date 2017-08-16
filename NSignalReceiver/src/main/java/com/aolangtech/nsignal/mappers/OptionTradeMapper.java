@@ -7,7 +7,6 @@
  */
 package com.aolangtech.nsignal.mappers;
 
-
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;

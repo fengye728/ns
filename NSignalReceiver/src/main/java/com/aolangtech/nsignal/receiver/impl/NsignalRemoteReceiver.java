@@ -86,19 +86,32 @@ public class NsignalRemoteReceiver implements NSignalReceiver {
 	    @Override
 	    public void channelActive(ChannelHandlerContext ctx) throws Exception {
 	    	// initialization
-	    	handler = new OptionTradeHandlerContext();
-	    	readCount = 0;
-	        logger.info("Active channel established with client: " + ctx.channel().remoteAddress());
+	    	init();
+	        logger.info("Active channel" + ctx.channel().remoteAddress());
 	    }
 
 	    @Override
 	    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-	    	logger.info("Load records success. Count: " + readCount);
+	    	complete(ctx.channel().remoteAddress().toString());
+	    	logger.info("Inactive Channel" + ctx.channel().remoteAddress());
+	    }
+	    @Override
+	    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
+	            throws Exception {
+	    	logger.info("Accidentally shut down! Channel" + ctx.channel().remoteAddress());
+	    }
+	    
+	    protected void init() {
+	    	handler = new OptionTradeHandlerContext();
+	    	readCount = 0;
+	    }
+	    
+	    protected void complete(String remoteAddress) {
+	    	logger.info("Load records from " + remoteAddress + " -Count: " + readCount);
 	    	handler.processForMap();
 	    	// persist all records
 	    	Long count = handler.persist();
-	    	logger.info("Persist " + handler.getOptionTradeDate() + " records success. Count: " + count);
-	    	logger.info("Inactive Channel established with client: " + ctx.channel().remoteAddress());
+	    	logger.info("Persist " + handler.getOptionTradeDate() + " records from " + remoteAddress + " -Count: " + count);
 	    }
 		
 	}

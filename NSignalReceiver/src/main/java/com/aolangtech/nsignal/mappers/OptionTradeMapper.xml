@@ -94,7 +94,7 @@
         		NULL,
         	</when>
         	<otherwise>
-        		${item.direction},
+        		#{item.direction},
         	</otherwise>
         </choose>
 	        
