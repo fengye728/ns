@@ -1,0 +1,27 @@
+@echo OFF
+
+SET TAPE_DIRECTORY=E:\OptionData\NxCoreData
+
+SET /P DATE=Tape file event date:
+SET OUTFOLDER=%2
+SET PREFIX=%TAPE_DIRECTORY%\%DATE%
+SET SUFFIX=.DO.nxc
+SET /A DAY=0
+
+:start
+SET /A DAY=%DAY%+1
+IF %DAY% LEQ 31 (
+	IF %DAY% LSS 10 (
+::		ECHO NxCoreReader %PREFIX%0%DAY%%SUFFIX% %OUTFOLDER%\%PREFIX%0%DAY%%SUFFIX%.trade
+::		CALL NxCoreReader %PREFIX%0%DAY%%SUFFIX% %OUTFOLDER%\%PREFIX%0%DAY%%SUFFIX%.trade
+		ECHO NxCoreReader %PREFIX%0%DAY%%SUFFIX% -r
+		CALL NxCoreReader %PREFIX%0%DAY%%SUFFIX% -r
+	) ELSE (
+::		ECHO NxCoreReader %PREFIX%%DAY%%SUFFIX% %OUTFOLDER%\%PREFIX%%DAY%%SUFFIX%.trade
+::		CALL NxCoreReader %PREFIX%%DAY%%SUFFIX% %OUTFOLDER%\%PREFIX%%DAY%%SUFFIX%.trade
+		ECHO NxCoreReader %PREFIX%%DAY%%SUFFIX% -r
+		CALL NxCoreReader %PREFIX%%DAY%%SUFFIX% -r
+	)
+	GOTO start
+)
+pause
