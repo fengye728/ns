@@ -32,3 +32,5 @@ dist/
 nbdist/
 .nb-gradle/
 /bin/
+
+__pycache__/
