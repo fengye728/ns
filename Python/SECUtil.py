@@ -32,11 +32,12 @@ SEC_INFO_TABLE_VOTE_NONE_REG = '<None>(.*?)</None>'
 
 class Filing:
     def __init__(self):
+        self.stockSymbol = ''
         self.type = ''
         self.url = ''
         self.date = ''
         self.reportDate = ''
-        self.info = ''
+        self.info = InfoTable()
 
     def parseFilingXMLRow(content):
         datas = re.findall(SEC_TABLE_DATA_REG, content, re.S)
@@ -47,6 +48,13 @@ class Filing:
         filing.date = datas[3]
         
         return filing
+
+    def persistToDisk(self):
+        '''Format of file name : Symbol + ReportDate.hr'''
+        filename = self.stockSymbol + self.reportDate + '.hr'
+        with open(filename, 'w') as f:
+            for hrItem in self.info.infoTableList:
+                f.write(hrItem.toString() + '\n')
 
 
 class InfoTable:
@@ -79,6 +87,14 @@ class InfoTable:
 
         return self
 
+    def compare(self, target):
+        if(self.cusip == target.cusip && self.titleClass == target.titleClass && self.investD == target.investD && self.SHorPRN == target.SHorPRN):
+            return True
+        else:
+            return False
+
+    def toString(self):
+        return self.issuerName + ',' + self.titleClass + ',' + self.cusip + ',' + self.value + ',' + self.amountSHorPRN + ',' + self.SHorPRN + ',' + self.investD + ',' + self.voteSole + ',' + self.voteShared + ',' + self.voteNone
 
 class HRList:
     SEC_INFO_TABLE_REG = '<infoTable>(.*?)</infoTable>'
@@ -97,3 +113,22 @@ class HRList:
             self.infoTableList.append(hrInfo)
 
         return self
+
+    def refine(self):
+        issuerHR = {cusip : 0, hrList : []}
+        for item in self.infoTableList:
+            if(item.cusip == issuerHR.cusip):
+                for hrItem in hrList:
+                    if(item.compare(hrItem)):
+                        hrItem.value += item.value
+                        hrItem.amountSHorPRN += item.amountSHorPRN
+                        hrItem.voteSole += item.voteSole
+                        hrItem.voteShared += item.voteShared
+                        hrItem.voteNone += item.voteNone
+                        '''Delete item in self'''
+                        break
+                else:
+                    ''' Add new item in hrList'''
+            else:
+                issuerHR.cusip = item.cusip
+                issuerHR.hrList = []

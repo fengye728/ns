@@ -82,10 +82,9 @@ def spideHR(stockSymbol, filingType):
         filingUrl = SEC_HOME_URL + filing.url
         filingContent = urllib.request.urlopen(filingUrl).read()
         filingContent = filingContent.decode(CODING_FORMAT)
-        
+
+        filing.stockSymbol = stockSymbol
         filing.reportDate = re.search(SEC_FILING_REPORT_DATE_REG, filingContent, re.S).group(1)
-        
-        print(filing.date, filing.reportDate)
         
         hrUrl = parseHRUrl(filingContent)
         if not hrUrl:
@@ -96,7 +95,8 @@ def spideHR(stockSymbol, filingType):
         hrContent = hrContent.decode(CODING_FORMAT)
         
         filing.info = parseHRTable(hrContent)
-
+        print(stockSymbol + filing.reportDate, len(filing.info.infoTableList))
+        filing.persistToDisk()
 
     
 table = spideHR('BLK', '13F-HR')
