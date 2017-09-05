@@ -31,6 +31,7 @@ shadowJar {
 		include(dependency('log4j:log4j:1.2.17'))
 		include(dependency(group: 'io.netty', name: 'netty-all', version: '4.1.6.Final'))
 	}
+	include('*')
 }
 
 dependencies {

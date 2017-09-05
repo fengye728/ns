@@ -70,7 +70,7 @@ public class NsignalRemoteReceiver implements NSignalReceiver {
 	 */
 	class NsignalHandler extends ChannelInboundHandlerAdapter {
 
-		private final Logger logger = org.apache.log4j.Logger.getLogger(NsignalHandler.class);
+		private final Logger logger = Logger.getLogger(NsignalHandler.class);
 		
 		private OptionTradeHandlerContext handler;
 		
@@ -98,7 +98,7 @@ public class NsignalRemoteReceiver implements NSignalReceiver {
 	    @Override
 	    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
 	            throws Exception {
-	    	logger.info("Accidentally shut down! Channel" + ctx.channel().remoteAddress());
+	    	logger.error(cause.getMessage());
 	    }
 	    
 	    protected void init() {
