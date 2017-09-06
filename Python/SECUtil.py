@@ -17,7 +17,7 @@ SEC_TABLE_DATE_URL_REG = 'href="(.*?)".*?id="documentsbutton".*?>'
 
 
 SEC_FILING_REPORT_DATE_REG = 'Period of Report</div>.*?<div class="info">(.*?)</div>'
-SEC_FILING_HR_URL_REG = 'href="(.*?)".*?>form13fInfoTable.xml<'
+SEC_FILING_HR_URL_REG = 'href="(.*?)".*?xml.*?INFORMATION TABLE'
 
 SEC_INFO_TABLE_ISSUER_NAME_REG = '<nameOfIssuer>(.*?)</nameOfIssuer>'
 SEC_INFO_TABLE_CLASS_REG = '<titleOfClass>(.*?)</titleOfClass>'
