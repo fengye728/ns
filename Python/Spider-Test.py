@@ -63,11 +63,9 @@ def parseHRUrl(content):
 
     
 def parseHRTable(content):
-    hrList = HRList.parseInfoTableListXML(content)
-    return hrList
+    return HRList.parseInfoTableListXML(content)
     
-
-def spideHR(stockSymbol, filingType):
+def spideHR(stockSymbol, filingType, startDate):
     
     params = {}
     params['owner'] = 'exclude'
@@ -85,6 +83,11 @@ def spideHR(stockSymbol, filingType):
 
         filing.stockSymbol = stockSymbol
         filing.reportDate = re.search(SEC_FILING_REPORT_DATE_REG, filingContent, re.S).group(1)
+        filing.reportDate = Filing.convertDate2Num(filing.reportDate)
+
+        if(filing.reportDate <= startDate):
+            filings.remove(filing)
+            continue
         
         hrUrl = parseHRUrl(filingContent)
         if not hrUrl:
@@ -95,9 +98,11 @@ def spideHR(stockSymbol, filingType):
         hrContent = hrContent.decode(CODING_FORMAT)
         
         filing.info = parseHRTable(hrContent)
-        print(stockSymbol + filing.reportDate, len(filing.info.infoTableList))
-        filing.persistToDisk()
+        print(stockSymbol + str(filing.reportDate), len(filing.info.infoTableList))
+        
+        filing.info.refine()
+        filing.persistInfoToDisk('BLK')
 
     
-table = spideHR('BLK', '13F-HR')
+table = spideHR('BLK', '13F-HR', 20170101)
 

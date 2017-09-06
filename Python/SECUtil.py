@@ -1,4 +1,5 @@
 import re
+import os
 
 SEC_HOME_URL = 'https://www.sec.gov/'
 
@@ -30,6 +31,9 @@ SEC_INFO_TABLE_VOTE_SOLE_REG = '<Sole>(.*?)</Sole>'
 SEC_INFO_TABLE_VOTE_SHARED_REG = '<Shared>(.*?)</Shared>'
 SEC_INFO_TABLE_VOTE_NONE_REG = '<None>(.*?)</None>'
 
+
+'''Does not process options'''
+
 class Filing:
     def __init__(self):
         self.stockSymbol = ''
@@ -37,7 +41,8 @@ class Filing:
         self.url = ''
         self.date = ''
         self.reportDate = ''
-        self.info = InfoTable()
+        '''HRList'''
+        self.info = []  
 
     def parseFilingXMLRow(content):
         datas = re.findall(SEC_TABLE_DATA_REG, content, re.S)
@@ -45,16 +50,18 @@ class Filing:
         filing = Filing()
         filing.type = datas[0]
         filing.url = re.search(SEC_TABLE_DATE_URL_REG, datas[1], re.S).group(1)
-        filing.date = datas[3]
+        filing.date = Filing.convertDate2Num(datas[3])
         
         return filing
 
-    def persistToDisk(self):
+    def persistInfoToDisk(self, path):
         '''Format of file name : Symbol + ReportDate.hr'''
-        filename = self.stockSymbol + self.reportDate + '.hr'
+        filename = path + os.path.sep + self.stockSymbol + str(self.reportDate) + '.hr'
         with open(filename, 'w') as f:
-            for hrItem in self.info.infoTableList:
-                f.write(hrItem.toString() + '\n')
+            f.write(self.info.toCSVString())
+
+    def convertDate2Num(date):
+        return int(date.replace('-', ''))
 
 
 class InfoTable:
@@ -76,25 +83,25 @@ class InfoTable:
         self.issuerName = re.search(SEC_INFO_TABLE_ISSUER_NAME_REG, content, re.S).group(1)
         self.titleClass = re.search(SEC_INFO_TABLE_CLASS_REG, content, re.S).group(1)
         self.cusip = re.search(SEC_INFO_TABLE_CUSIP_REG, content, re.S).group(1)
-        self.value = re.search(SEC_INFO_TABLE_VALUE_REG, content, re.S).group(1)
-        self.amountSHorPRN = re.search(SEC_INFO_TABLE_AMOUNT_SH_PRN_REG, content, re.S).group(1)
+        self.value = int(re.search(SEC_INFO_TABLE_VALUE_REG, content, re.S).group(1))
+        self.amountSHorPRN = int(re.search(SEC_INFO_TABLE_AMOUNT_SH_PRN_REG, content, re.S).group(1))
         self.SHorPRN = re.search(SEC_INFO_TABLE_SH_OR_PRN_REG, content, re.S).group(1)
         #self.otherManager = re.search(SEC_INFO_TABLE_OTHER_MAG_REG, content, re.S).group(1)
         self.investD = re.search(SEC_INFO_TABLE_INVEST_D_REG, content, re.S).group(1)
-        self.voteSole = re.search(SEC_INFO_TABLE_VOTE_SOLE_REG, content, re.S).group(1)
-        self.voteShared = re.search(SEC_INFO_TABLE_VOTE_SHARED_REG, content, re.S).group(1)
-        self.voteNone = re.search(SEC_INFO_TABLE_VOTE_NONE_REG, content, re.S).group(1)
+        self.voteSole = int(re.search(SEC_INFO_TABLE_VOTE_SOLE_REG, content, re.S).group(1))
+        self.voteShared = int(re.search(SEC_INFO_TABLE_VOTE_SHARED_REG, content, re.S).group(1))
+        self.voteNone = int(re.search(SEC_INFO_TABLE_VOTE_NONE_REG, content, re.S).group(1))
 
         return self
 
     def compare(self, target):
-        if(self.cusip == target.cusip && self.titleClass == target.titleClass && self.investD == target.investD && self.SHorPRN == target.SHorPRN):
+        if(self.cusip == target.cusip and self.titleClass == target.titleClass and self.investD == target.investD and self.SHorPRN == target.SHorPRN):
             return True
         else:
             return False
 
     def toString(self):
-        return self.issuerName + ',' + self.titleClass + ',' + self.cusip + ',' + self.value + ',' + self.amountSHorPRN + ',' + self.SHorPRN + ',' + self.investD + ',' + self.voteSole + ',' + self.voteShared + ',' + self.voteNone
+        return self.issuerName + ',' + self.titleClass + ',' + self.cusip + ',' + str(self.value) + ',' + str(self.amountSHorPRN) + ',' + self.SHorPRN + ',' + self.investD + ',' + str(self.voteSole) + ',' + str(self.voteShared) + ',' + str(self.voteNone)
 
 class HRList:
     SEC_INFO_TABLE_REG = '<infoTable>(.*?)</infoTable>'
@@ -115,10 +122,14 @@ class HRList:
         return self
 
     def refine(self):
-        issuerHR = {cusip : 0, hrList : []}
-        for item in self.infoTableList:
-            if(item.cusip == issuerHR.cusip):
-                for hrItem in hrList:
+        issuerCusip = ''
+        issuerHrList = []
+        size = len(self.infoTableList)
+        i = 0
+        while(i < size):
+            item = self.infoTableList[i]
+            if(item.cusip == issuerCusip):
+                for hrItem in issuerHrList:
                     if(item.compare(hrItem)):
                         hrItem.value += item.value
                         hrItem.amountSHorPRN += item.amountSHorPRN
@@ -126,9 +137,21 @@ class HRList:
                         hrItem.voteShared += item.voteShared
                         hrItem.voteNone += item.voteNone
                         '''Delete item in self'''
+                        self.infoTableList.pop(i)
+                        i -= 1
+                        size -= 1
                         break
                 else:
                     ''' Add new item in hrList'''
+                    issuerHrList.append(item)
             else:
-                issuerHR.cusip = item.cusip
-                issuerHR.hrList = []
+                issuerCusip = item.cusip
+                issuerHrList = [item]           
+            i += 1
+
+    def toCSVString(self):
+        csv = ''
+        for hrItem in self.infoTableList:
+            csv += hrItem.toString() + '\n'
+
+        return csv
