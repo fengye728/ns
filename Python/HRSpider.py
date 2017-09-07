@@ -5,6 +5,10 @@ import os
 import sys
 from SECUtil import *
 
+'''
+	Usage: 
+		HRSpider companyFile output_path
+'''
 CODING_FORMAT = 'UTF-8'
 
 ''' Functions Definition'''
@@ -77,6 +81,7 @@ def spideHRFilings(stockSymbol, filingType, startDate):
     params['count'] = 100
     params['CIK'] = stockSymbol
     params['type'] = filingType
+    #params['dateb'] = 20160313
     
 
     filings = parseFilingList(params)
@@ -107,7 +112,7 @@ def spideHRFilings(stockSymbol, filingType, startDate):
 
         # Persist Holding Report
         filing.info.refine()
-        print(stockSymbol + str(filing.reportDate), len(filing.info.infoTableList))
+        print(stockSymbol + '-' + str(filing.reportDate), len(filing.info.infoTableList))
         filing.persistInfoToDisk(outputPath)
 
     return filings
@@ -115,7 +120,7 @@ def spideHRFilings(stockSymbol, filingType, startDate):
 def persistToDisk(stockSymbol, filings, outputPath):
     for filing in filings:
         filing.info.refine()
-        print(stockSymbol + str(filing.reportDate), len(filing.info.infoTableList))
+        print(stockSymbol + '-' + str(filing.reportDate), len(filing.info.infoTableList))
         filing.persistInfoToDisk(outputPath)
 
 
@@ -157,17 +162,17 @@ for stockSymbol in stockSymbolList:
     
     if os.path.exists(outputPath):
         files = os.listdir(outputPath)
-        files = list(filter(lambda name : re.match('^' + stockSymbol + '.*?hr$', name), files))
+        files = list(filter(lambda name : re.match('^' + stockSymbol + HR_FILE_SEP + '.*?hr$', name), files))
         if len(files) == 0:
             startDate = 0
         else:
             lastFile = max(files)
-            startDate = int(re.search('(\d+)\.hr', lastFile[len(stockSymbol):]).group(1))
+            startDate = int(re.search('(\d+)\.hr', lastFile[len(stockSymbol) + len(HR_FILE_SEP):]).group(1))
     else:
         os.mkdir(outputPath)
         startDate = 0
 
-    print(stockSymbol, startDate)
+    print(stockSymbol, startDate, end = ' | ')
     filings = spideHRFilings(stockSymbol, filingType, startDate)
     #persistToDisk(stockSymbol, filings, outputPath)
 

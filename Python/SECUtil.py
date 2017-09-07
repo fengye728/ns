@@ -1,6 +1,8 @@
 import re
 import os
 
+HR_FILE_SEP = '-'
+
 SEC_HOME_URL = 'https://www.sec.gov/'
 
 SEC_SEARCH_URL = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&"
@@ -17,19 +19,20 @@ SEC_TABLE_DATE_URL_REG = 'href="(.*?)".*?id="documentsbutton".*?>'
 
 
 SEC_FILING_REPORT_DATE_REG = 'Period of Report</div>.*?<div class="info">(.*?)</div>'
-SEC_FILING_HR_URL_REG = 'href="(.*?)".*?xml.*?INFORMATION TABLE'
+SEC_FILING_HR_URL_REG = '2</td>.*?href="([^\n]*?)"[^\n]*?xml</a>.*?INFORMATION TABLE'
 
-SEC_INFO_TABLE_ISSUER_NAME_REG = '<nameOfIssuer>(.*?)</nameOfIssuer>'
-SEC_INFO_TABLE_CLASS_REG = '<titleOfClass>(.*?)</titleOfClass>'
-SEC_INFO_TABLE_CUSIP_REG = '<cusip>(.*?)</cusip>'
-SEC_INFO_TABLE_VALUE_REG = '<value>(.*?)</value>'
-SEC_INFO_TABLE_AMOUNT_SH_PRN_REG = '<sshPrnamt>(.*?)</sshPrnamt>'
-SEC_INFO_TABLE_SH_OR_PRN_REG = '<sshPrnamtType>(.*?)</sshPrnamtType>'
-SEC_INFO_TABLE_INVEST_D_REG = '<investmentDiscretion>(.*?)</investmentDiscretion>'
-#SEC_INFO_TABLE_OTHER_MAG_REG = '<otherManager>(.*?)</otherManager>'
-SEC_INFO_TABLE_VOTE_SOLE_REG = '<Sole>(.*?)</Sole>'
-SEC_INFO_TABLE_VOTE_SHARED_REG = '<Shared>(.*?)</Shared>'
-SEC_INFO_TABLE_VOTE_NONE_REG = '<None>(.*?)</None>'
+SEC_INFO_TABLE_REG = '<[^<>\n]*?infoTable>(.*?)</[^<>\n]*?infoTable>'
+SEC_INFO_TABLE_ISSUER_NAME_REG = '<[^<>\n]*?nameOfIssuer>(.*?)</[^<>\n]*?nameOfIssuer>'
+SEC_INFO_TABLE_CLASS_REG = '<[^<>\n]*?titleOfClass>(.*?)</[^<>\n]*?titleOfClass>'
+SEC_INFO_TABLE_CUSIP_REG = '<[^<>\n]*?cusip>(.*?)</[^<>\n]*?cusip>'
+SEC_INFO_TABLE_VALUE_REG = '<[^<>\n]*?value>(.*?)</[^<>\n]*?value>'
+SEC_INFO_TABLE_AMOUNT_SH_PRN_REG = '<[^<>\n]*?sshPrnamt>(.*?)</[^<>\n]*?sshPrnamt>'
+SEC_INFO_TABLE_SH_OR_PRN_REG = '<[^<>\n]*?sshPrnamtType>(.*?)</[^<>\n]*?sshPrnamtType>'
+SEC_INFO_TABLE_INVEST_D_REG = '<[^<>\n]*?investmentDiscretion>(.*?)</[^<>\n]*?investmentDiscretion>'
+#SEC_INFO_TABLE_OTHER_MAG_REG = '<[^<>\n]*?otherManager>(.*?)</[^<>\n]*?otherManager>'
+SEC_INFO_TABLE_VOTE_SOLE_REG = '<[^<>\n]*?Sole>(.*?)</[^<>\n]*?Sole>'
+SEC_INFO_TABLE_VOTE_SHARED_REG = '<.*?Shared>(.*?)</[^<>\n]*?Shared>'
+SEC_INFO_TABLE_VOTE_NONE_REG = '<[^<>\n]*?None>(.*?)</[^<>\n]*?None>'
 
 
 '''Does not process options'''
@@ -56,8 +59,8 @@ class Filing:
 
     def persistInfoToDisk(self, path):
         '''Format of file name : Symbol + ReportDate.hr'''
-        filename = path + os.path.sep + self.stockSymbol + str(self.reportDate) + '.hr'
-        with open(filename, 'w') as f:
+        filename = path + os.path.sep + self.stockSymbol + HR_FILE_SEP + str(self.reportDate) + '.hr'
+        with open(filename, 'a') as f:
             f.write(self.info.toCSVString())
 
     def convertDate2Num(date):
@@ -80,17 +83,21 @@ class InfoTable:
 
     def parseInfoTableXML(content):
         self = InfoTable()
-        self.issuerName = re.search(SEC_INFO_TABLE_ISSUER_NAME_REG, content, re.S).group(1)
-        self.titleClass = re.search(SEC_INFO_TABLE_CLASS_REG, content, re.S).group(1)
-        self.cusip = re.search(SEC_INFO_TABLE_CUSIP_REG, content, re.S).group(1)
-        self.value = int(re.search(SEC_INFO_TABLE_VALUE_REG, content, re.S).group(1))
-        self.amountSHorPRN = int(re.search(SEC_INFO_TABLE_AMOUNT_SH_PRN_REG, content, re.S).group(1))
-        self.SHorPRN = re.search(SEC_INFO_TABLE_SH_OR_PRN_REG, content, re.S).group(1)
-        #self.otherManager = re.search(SEC_INFO_TABLE_OTHER_MAG_REG, content, re.S).group(1)
-        self.investD = re.search(SEC_INFO_TABLE_INVEST_D_REG, content, re.S).group(1)
-        self.voteSole = int(re.search(SEC_INFO_TABLE_VOTE_SOLE_REG, content, re.S).group(1))
-        self.voteShared = int(re.search(SEC_INFO_TABLE_VOTE_SHARED_REG, content, re.S).group(1))
-        self.voteNone = int(re.search(SEC_INFO_TABLE_VOTE_NONE_REG, content, re.S).group(1))
+        try:
+            self.issuerName = re.search(SEC_INFO_TABLE_ISSUER_NAME_REG, content, re.S).group(1)
+            self.titleClass = re.search(SEC_INFO_TABLE_CLASS_REG, content, re.S).group(1)
+            self.cusip = re.search(SEC_INFO_TABLE_CUSIP_REG, content, re.S).group(1)
+            self.value = int(re.search(SEC_INFO_TABLE_VALUE_REG, content, re.S).group(1))
+            self.amountSHorPRN = int(re.search(SEC_INFO_TABLE_AMOUNT_SH_PRN_REG, content, re.S).group(1))
+            self.SHorPRN = re.search(SEC_INFO_TABLE_SH_OR_PRN_REG, content, re.S).group(1)
+            #self.otherManager = re.search(SEC_INFO_TABLE_OTHER_MAG_REG, content, re.S).group(1)
+            self.investD = re.search(SEC_INFO_TABLE_INVEST_D_REG, content, re.S).group(1)
+            self.voteSole = int(re.search(SEC_INFO_TABLE_VOTE_SOLE_REG, content, re.S).group(1))
+            self.voteShared = int(re.search(SEC_INFO_TABLE_VOTE_SHARED_REG, content, re.S).group(1))
+            self.voteNone = int(re.search(SEC_INFO_TABLE_VOTE_NONE_REG, content, re.S).group(1))
+        except AttributeError:
+            print(content)
+            raise
 
         return self
 
@@ -104,13 +111,12 @@ class InfoTable:
         return self.issuerName + ',' + self.titleClass + ',' + self.cusip + ',' + str(self.value) + ',' + str(self.amountSHorPRN) + ',' + self.SHorPRN + ',' + self.investD + ',' + str(self.voteSole) + ',' + str(self.voteShared) + ',' + str(self.voteNone)
 
 class HRList:
-    SEC_INFO_TABLE_REG = '<infoTable>(.*?)</infoTable>'
     def __init__(self):
         self.infoTableList = []
 
     '''Class Method'''
     def parseInfoTableListXML(content):
-        strInfoTableList = re.findall(HRList.SEC_INFO_TABLE_REG, content, re.S)
+        strInfoTableList = re.findall(SEC_INFO_TABLE_REG, content, re.S)
 
         self = HRList()
         self.infoTableList = []
