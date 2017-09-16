@@ -30,6 +30,7 @@ public class NSignalFileReceiver implements NSignalReceiver{
 		
 		handler = new OptionTradeHandlerContext();
 		
+		logger.info("Start to load records from file "+ filename + "...");
 		String line;
 		long recordCount = 0;
 		while((line = this.receiveRecord()) != null) {
@@ -37,13 +38,13 @@ public class NSignalFileReceiver implements NSignalReceiver{
 			++recordCount;
 		}
 		
-		logger.info("Load records success. Count: " + recordCount);
+		logger.info("Load records success. Count of records: " + recordCount);
 		// after process
 		handler.processForMap();
 		
 		// persist data
 		recordCount = handler.persist();
-		logger.info("Persist " + handler.getOptionTradeDate() + " records success. Count: " + recordCount);
+		logger.info("Persist records success - Date of " + handler.getOptionTradeDate() + ". Count of records: " + recordCount);
 	}
 	
 	/**

@@ -55,6 +55,23 @@ public class OptionTradeModel {
 	private int bidAskTD;			// The trade direction inferred by method ask-bid quote based.	-100 ~ 0: Sell; 0 ~ 100: Buy.
 	
 	/**
+	 * Check whether the condition is that have legs.
+	 * 
+	 * @return
+	 */
+	public boolean isLegCondition() {
+		switch(condition) {
+		case CommonConstants.TRADE_CONDITION_SPREAD:
+		case CommonConstants.TRADE_CONDITION_STRADDLE:
+		case CommonConstants.TRADE_CONDITION_BUYWRITE:
+		case CommonConstants.TRADE_CONDITION_COMBO:
+			return true;
+		default:
+			return false;
+		}
+	}
+	
+	/**
 	 * Generate the direction field. Just for agreeing with database field.
 	 * 
 	 */

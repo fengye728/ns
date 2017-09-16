@@ -1,6 +1,17 @@
 package com.aolangtech.nsignal.constants;
 
 public class CommonConstants {
+	
+	// --------------------- Trading Condition ----------------
+	public final static int TRADE_CONDITION_SPREAD = 35;
+	
+	public final static int TRADE_CONDITION_STRADDLE = 36;
+	
+	public final static int TRADE_CONDITION_BUYWRITE = 37;
+	
+	public final static int TRADE_CONDITION_COMBO = 38;
+	
+	
 
 	public final static String OPTION_TRADE_RECORD_SEPARATOR = ",";
 	
