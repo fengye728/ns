@@ -122,6 +122,9 @@ public class OptionTradeHandlerContext{
 							}
 						}
 					}
+					if(firstLegSequenceId != null) {
+						legList.get(legList.size() - 1).setLegSequenceId(firstLegSequenceId);
+					}
 
 				}
 			}
