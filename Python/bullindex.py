@@ -3,10 +3,13 @@ import csv
 import os
 import datetime
 import sys
+import numpy as np
+import pandas as pd
 
 DATE_FORMAT = '%Y%m%d'
 
 SYMBOL_FILENAME = './symbol'
+OUTPUT_FILEPATH = r'.\bull_index.csv'
 
 # Input process
 if (len(sys.argv) != 2):
@@ -107,7 +110,6 @@ def loadStockData(data_path):
                 continue
 
             stock_map[row[0]].append(row)
-
     return stock_map
 
 
@@ -170,23 +172,27 @@ bull_results = [] * len(stock_map)
 for key, value in stock_map.items():
     if len(value) == 0:
         continue
+
     cur_up_item = bullindexForLongest(value)
     cur_dt = value[cur_up_item[1]][2]
     targ_dt = value[-1][2]
     minus_days = len(value) - cur_up_item[1]
-    up_rate = value[-1][6] / value[cur_up_item[1]][6] - 1
+
+    if cur_up_item[1] == 0:
+        start = 0
+    else:
+        start = cur_up_item[1] - 1
+
+    up_rate = value[-1][6] / value[start][6] - 1
 
     up_days = 0
     mean_up = 0.0
     down_days = 0
     mean_down = 0.0
-    if cur_up_item[1] == 0:
-        up_days += 1
-        start = 1
-    else:
-        start = cur_up_item[1]
-    for i in range(start, len(value)):
-        magnitude = value[i][6] / value[i - 1][6] - 1
+    up_down_rate = 0
+
+    for i in range(start, len(value) - 1):
+        magnitude = value[i + 1][6] / value[i][6] - 1
         if magnitude >= 0:
             up_days += 1
             mean_up += magnitude
@@ -197,11 +203,12 @@ for key, value in stock_map.items():
         mean_up = mean_up / up_days
     if not down_days == 0:
         mean_down = mean_down / down_days
+        up_down_rate = abs(mean_up / mean_down)
 
-    bull_results.append((key, cur_dt, minus_days, up_rate, mean_up, up_days, mean_down, down_days))
+    bull_results.append((key, cur_dt, minus_days, up_rate, mean_up, up_days, mean_down, down_days, up_down_rate))
 
-bull_results.sort(key=lambda bull: -bull[3])
+BULL_INDEX_COLUMNS = ['Symbol', 'StartDt', 'Duration', 'TotalUpRate', 'MeanUpRate', 'UpDuration', 'MeanDownRate', 'DownDuration', 'Up/Down_Rate']
 
-with open('./bull_index', 'w') as f:
-    for bull in bull_results:
-        f.write(str(bull) + '\n')
+bull_df = pd.DataFrame(data = bull_results, columns=BULL_INDEX_COLUMNS).sort_values(['Up/Down_Rate'], ascending=False)
+
+bull_df.to_csv(OUTPUT_FILEPATH, index = False, header = True)
