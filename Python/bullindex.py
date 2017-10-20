@@ -5,6 +5,7 @@ import datetime
 import sys
 import numpy as np
 import pandas as pd
+import math
 
 DATE_FORMAT = '%Y%m%d'
 
@@ -19,7 +20,7 @@ if (len(sys.argv) != 2):
 DATA_PATH = sys.argv[1]
 
 
-def getEquityFilenameFromZip(zip_filename):
+def getEquityFileContentFromZip(zip_filename):
     if not os.path.isfile(zip_filename):
         return None
 
@@ -35,8 +36,6 @@ def getEquityFilenameFromZip(zip_filename):
 '''
    num_dt - yyyyMMDD 
 '''
-
-
 def increaseOneNumDt(cur_num_dt):
     cur_num_dt += 1
     DD = cur_num_dt % 100
@@ -79,15 +78,13 @@ row column:
 5 - low
 6 - close
 '''
-
-
 def loadStockData(data_path):
     files = os.listdir(data_path)
     stock_map = getSymbolMap()
     print(len(stock_map))
     for file in files:
         try:
-            content = getEquityFilenameFromZip(data_path + os.sep + file)
+            content = getEquityFileContentFromZip(data_path + os.sep + file)
         except BaseException:
             continue
 
@@ -117,8 +114,6 @@ def loadStockData(data_path):
 quote_weight_list item:
     price spread with previous close price
 '''
-
-
 def preprocessQuoteList(quotelist):
     # set first
     quote_weight_list = [0] * len(quotelist)
@@ -156,6 +151,18 @@ def bullindexForLongest(quotelist):
 
 stock_map = loadStockData(DATA_PATH)
 
+def sigmod_duration(x):
+    x = (x - 20) / 10
+    return 1 / ( 1 + math.pow(math.e, -x))
+
+def z_score(x):
+    x_axis = 0
+    x = np.array(x).astype(float)
+    x -= np.mean(x, axis = x_axis)
+    x /= np.std(x, axis = x_axis)
+
+    return x
+
 '''
 row columns:
 0 - symbol
@@ -191,24 +198,37 @@ for key, value in stock_map.items():
     mean_down = 0.0
     up_down_rate = 0
 
+    error_record = False
     for i in range(start, len(value) - 1):
         magnitude = value[i + 1][6] / value[i][6] - 1
+        # Filter the stock that jump 150% at one day and price less 10 dollors
+        if magnitude >= 1.5 or value[i][6] < 10:
+            error_record = True
+            break
+
         if magnitude >= 0:
             up_days += 1
             mean_up += magnitude
         else:
             down_days += 1
             mean_down += magnitude
+    if(error_record):
+        error_record = False
+        continue
+
     if not up_days == 0:
         mean_up = mean_up / up_days
     if not down_days == 0:
         mean_down = mean_down / down_days
-        up_down_rate = abs(mean_up / mean_down)
+        up_down_rate = abs(up_days / down_days)
 
-    bull_results.append((key, cur_dt, minus_days, up_rate, mean_up, up_days, mean_down, down_days, up_down_rate))
+    bull_index = int((up_rate * up_down_rate * sigmod_duration(minus_days)) * 100)
+    if(bull_index < 30):
+        continue
+    bull_results.append((key, cur_dt, minus_days, up_rate, mean_up, up_days, mean_down, down_days, up_down_rate, bull_index))
 
-BULL_INDEX_COLUMNS = ['Symbol', 'StartDt', 'Duration', 'TotalUpRate', 'MeanUpRate', 'UpDuration', 'MeanDownRate', 'DownDuration', 'Up/Down_Rate']
+BULL_INDEX_COLUMNS = ['Symbol', 'StartDt', 'Duration', 'TotalUpRate', 'MeanUpRate', 'UpDuration', 'MeanDownRate', 'DownDuration', 'Up/Down_Rate', 'BullIndex']
 
 bull_df = pd.DataFrame(data = bull_results, columns=BULL_INDEX_COLUMNS).sort_values(['Up/Down_Rate'], ascending=False)
 
-bull_df.to_csv(OUTPUT_FILEPATH, index = False, header = True)
+bull_df.sort_values(by = 'BullIndex', axis = 0, ascending = False).to_csv(OUTPUT_FILEPATH, index = False, header = True)

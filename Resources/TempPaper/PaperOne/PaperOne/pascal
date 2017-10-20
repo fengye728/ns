@@ -1,0 +1,16 @@
+begin
+	if( boolean_expression 1) then
+	   if(boolean_expression 2)then S1
+	   else
+			S3
+	else
+	   S2
+	if a=12 then 
+		begin  
+			writeln('a is 12');  
+		end  
+	else  
+		begin  
+			writeln('a isn`t 12');  
+		end
+end
