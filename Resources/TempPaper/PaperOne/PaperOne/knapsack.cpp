@@ -4,23 +4,37 @@
 #include<iostream>
 #include"PaperOne.h"
 
+#define RAND_PRECENT()	(rand() % 10000 / 10000.0)
+
 using namespace std;
 
 // -------------------------- GeneticAlgo Public Functions --------------------
 std::string GeneticAlgo::Generate()
 {
-	std::vector<std::string> generation = this->initOriginEntities();
+	std::vector<std::string> oldGeneration;
+	std::vector<std::string> newGeneration;
 
 	std::string bestEntity;
 	int bestFitness = 0;
 	int bestGenerationNum = 0;
 
+	// loop for best
 	for (int i = 0; i < this->maxGenerations; ++i)
 	{
-		generation = this->selection(generation);
+		if (i == 0)
+		{
+			// init origin generation
+			this->initOriginEntities(oldGeneration);
+			newGeneration = oldGeneration;
+		}
+		else
+		{
+			// select new from old
+			this->selection(oldGeneration, newGeneration);
+		}
 
 		// find best fitness
-		for (auto it = generation.begin(); it != generation.end(); it++)
+		for (auto it = newGeneration.begin(); it != newGeneration.end(); it++)
 		{
 			int fitness = this->pPopulation->GetFitness(*it);
 
@@ -31,50 +45,93 @@ std::string GeneticAlgo::Generate()
 				bestGenerationNum = i;
 			}
 		}
+		// For debug
+#ifdef PAPER_DEBUG
+		if (i % 100 == 0)
+		{
+			cout << "Loop in " << i  << "\tBest fit: " << bestFitness << endl;
+		}
+#endif
 	}
 	cout << "Best: GenerationNum - " << bestGenerationNum << ", Fitness - " << bestFitness << ", Entity - " << bestEntity << endl;
 	return bestEntity;
 }
 
 // -------------------------- GeneticAlgo Private Functions -------------------
-std::vector<std::string> GeneticAlgo::initOriginEntities()
+void GeneticAlgo::initOriginEntities(std::vector<std::string>& generation)
 {
-	vector<string> generation;
+	const int GENE_POOL_SIZE = this->pPopulation->GetGenePoolSize();
+	// allocate memory
+	char *pChrom = new char[GENE_POOL_SIZE + 1];
+
+	// init
+	generation.clear();
+
+	// For debug
+#ifdef PAPER_DEBUG
+	int geneCount[32] = {};
+#endif
+
 	while (generation.size() < this->originEntityNum)
 	{
-		string entity = "";
-		for (int i = this->pPopulation->GetGenePoolSize(); i > 0; --i) 
+		// init chrom
+		for (int i = 0; i <= GENE_POOL_SIZE; ++i)
 		{
-			char gene = rand() % 2 == 1 ? GENE_EXIST_CHAR : GENE_NOT_EXIT_CHAR;
-			entity += gene;
+			pChrom[i] = GENE_NOT_EXIT_CHAR;
+		}
+		pChrom[GENE_POOL_SIZE] = '\0';
+
+		// random set gene until this entity can not live or reach max size
+		int randomPos = 0;
+		bool canLive = true;
+
+		for (int j = 0; j < GENE_POOL_SIZE && canLive; ++j)
+		{
+			randomPos = rand() % GENE_POOL_SIZE;
+			pChrom[randomPos] = GENE_EXIST_CHAR;
+
+			canLive = this->pPopulation->CanLive(pChrom);
+
+#ifdef PAPER_DEBUG
+			geneCount[randomPos] += 1;
+#endif
+		}
+
+		// reset the last random position if this entity can not live
+		if (!canLive)
+		{
+			pChrom[randomPos] = GENE_NOT_EXIT_CHAR;
 		}
 		
 		// check if the entity already existed
-		auto it = std::find(generation.begin(), generation.end(), entity);
+		auto it = std::find(generation.begin(), generation.end(), pChrom);
 		if (it == generation.end())
 		{
-			generation.push_back(entity);
+			generation.push_back(pChrom);
 		}
 
 	}
-	return generation;
+
+	// free memory
+	delete pChrom;
 }
-
-std::vector<std::string> GeneticAlgo::selection(std::vector<std::string> entities)
+void GeneticAlgo::selection(const std::vector<std::string>& srcEntities, std::vector<std::string>& newGeneration)
 {
-	int size = entities.size();
-
-	int* fitnesses = new int[size];
+	// init
+	int size = srcEntities.size();
 	int totalFitness = 0;
+	newGeneration.clear();
+
+	// allocate memory
+	int* fitnesses = new int[size];
 
 	// calc fitness
 	for (int i = 0; i < size; ++i)
 	{
-		fitnesses[i] = this->pPopulation->GetFitness(entities[i]);
+		fitnesses[i] = this->pPopulation->GetFitness(srcEntities[i]);
 		totalFitness += fitnesses[i];
 	}
 
-	std::vector<std::string> newGeneration;
 
 	// generate newGeneration 
 	while(newGeneration.size() < size)
@@ -87,25 +144,25 @@ std::vector<std::string> GeneticAlgo::selection(std::vector<std::string> entitie
 		std::string child2;
 
 		// check if crossover
-		if (rand() % 10 / 10.0 <= this->crossoverProb)
+		if (RAND_PRECENT() <= this->crossoverProb)
 		{
 			// crossover
-			this->crossover(entities.at(parentPapa), entities.at(parentMama), child1, child2);
+			this->crossover(srcEntities.at(parentPapa), srcEntities.at(parentMama), child1, child2);
 		}
 		else
 		{
-			child1 = entities.at(parentPapa);
-			child2 = entities.at(parentMama);
+			child1 = srcEntities.at(parentPapa);
+			child2 = srcEntities.at(parentMama);
 		}
 
 		// check if mutate
-		if (rand() % 10 / 10.0 <= this->mutateProb)
+		if (RAND_PRECENT() <= this->mutateProb)
 		{
-			this->mutate(child1);
+			child1 = this->mutate(child1);
 		}
-		if (rand() % 10 / 10.0 <= this->mutateProb)
+		if (RAND_PRECENT() <= this->mutateProb)
 		{
-			this->mutate(child2);
+			child2 = this->mutate(child2);
 		}
 
 		// add new children
@@ -113,33 +170,41 @@ std::vector<std::string> GeneticAlgo::selection(std::vector<std::string> entitie
 		// check if the children can live and already existed
 		if (this->pPopulation->CanLive(child1))
 		{
+			newGeneration.push_back(child1);
+			/*
 			auto it = std::find(newGeneration.begin(), newGeneration.end(), child1);
 			if (it == newGeneration.end())
 			{
 				newGeneration.push_back(child1);
 			}
+			*/
 		}
 		
 		if (this->pPopulation->CanLive(child2))
 		{
+			newGeneration.push_back(child2);
+			/*
 			auto it = std::find(newGeneration.begin(), newGeneration.end(), child2);
 			if (it == newGeneration.end())
 			{
 				newGeneration.push_back(child2);
 			}
+			*/
+
 		}
 	}
-	return newGeneration;
+	// free memory
+	delete[] fitnesses;
 }
 
-void GeneticAlgo::crossover(std::string entityPapa, std::string entityMama, std::string& child1, std::string child2)
+void GeneticAlgo::crossover(const std::string& entityPapa, const std::string& entityMama, std::string& child1, std::string& child2)
 {
 	int pos = rand() % this->pPopulation->GetGenePoolSize();
 	child1 = entityPapa.substr(0, pos) + entityMama.substr(pos);
 	child2 = entityMama.substr(0, pos) + entityPapa.substr(pos);
 }
 
-std::string GeneticAlgo::mutate(std::string entity)
+std::string GeneticAlgo::mutate(const std::string& entity)
 {
 	int mutationPos = rand() % this->pPopulation->GetGenePoolSize();
 

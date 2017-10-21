@@ -2,6 +2,7 @@
 #include<fstream>
 #include<string>
 #include<vector>
+#include<time.h>
 #include"PaperOne.h"
 
 using namespace std;
@@ -28,18 +29,19 @@ void testPascal()
 	}
 }
 
+// Best fitness ever : 92 
 void testGenericAlgo()
 {
 	char *filename = ".\\package";
 	const int MAX_VOLUME = 75;
 	const int MAX_WEIGHT = 80;
 
-	const int ORIGIN_ENTITY_NUM = 10;
-	const int MAX_GENERATIONS = 50;
+	const int ORIGIN_ENTITY_NUM = 100;
+	const int MAX_GENERATIONS = 3000;
 	const double CROSSOVER_PROB = 0.8;
 	const double MUTATE_PROB = 0.001;
 	
-
+	// allocate memory in elements
 	vector<int *> records;
 
 	// load records
@@ -54,6 +56,7 @@ void testGenericAlgo()
 	{
 		while (!file.eof())
 		{
+			// allocate memory
 			int *pItem = new int[3];
 			file >> pItem[0];
 			file >> pItem[1];
@@ -77,6 +80,11 @@ void testGenericAlgo()
 
 int main(int argc, char* argv[]) 
 {
+	// set random seed
+	srand((int)time(0));
+
+	cout << "---- Step One: test module checking pascal code:" << endl;
 	testPascal();
+	cout << "---- Step Two: test module finding best answer of knapsack problem:" << endl;
 	testGenericAlgo();
 }

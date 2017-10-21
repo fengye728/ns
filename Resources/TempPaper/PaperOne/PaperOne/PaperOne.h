@@ -1,7 +1,11 @@
 #pragma once
 
+#define PAPER_DEBUG
+
+// -------------------------- Pascal -----------------------------
 int CheckPascal(std::string statement);
 
+// -------------------------- Generic ----------------------------
 #define	GENE_NOT_EXIT_CHAR	'0'
 #define	GENE_EXIST_CHAR		'1'
 
@@ -91,13 +95,13 @@ public:
 	}
 
 private:
-	std::vector<std::string> initOriginEntities();
+	void GeneticAlgo::initOriginEntities(std::vector<std::string>& generation);
 
-	std::vector<std::string> selection(std::vector<std::string> entities);
+	void selection(const std::vector<std::string>& srcEntities, std::vector<std::string>& tgtEntities);
 
-	void GeneticAlgo::crossover(std::string entityPapa, std::string entiryMama, std::string& child1, std::string child2);
+	void GeneticAlgo::crossover(const std::string& entityPapa, const std::string& entityMama, std::string& child1, std::string& child2);
 
-	std::string mutate(std::string entity);
+	std::string GeneticAlgo::mutate(const std::string& entity);
 
 	int rouletteSelect(int* fitnesses, int totalFitness, int size);
 
