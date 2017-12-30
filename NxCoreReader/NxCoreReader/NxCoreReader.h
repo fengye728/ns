@@ -10,6 +10,7 @@ class NxCoreReader
 public:
 	virtual void ProcessTradeMsg(const NxCoreSystem* pNxCoreSys, const NxCoreMessage* pNxCoreMessage) {}
 	virtual void ProcessQuoteMsg(const NxCoreSystem* pNxCoreSys, const NxCoreMessage* pNxCoreMessage) {}
+	virtual void ProcessCategoryMsg(const NxCoreSystem* pNxCoreSys, const NxCoreMessage* pNxCoreMessage) {}
 
 public:
 	virtual bool OpenReader() = 0;
@@ -31,6 +32,7 @@ class NxCoreTradeReader : public NxCoreReader
 public:
 	virtual void ProcessTradeMsg(const NxCoreSystem* pNxCoreSys, const NxCoreMessage* pNxCoreMessage);
 	virtual void ProcessQuoteMsg(const NxCoreSystem* pNxCoreSys, const NxCoreMessage* pNxCoreMessage);
+	virtual void ProcessCategoryMsg(const NxCoreSystem* pNxCoreSys, const NxCoreMessage* pNxCoreMessage);
 
 	virtual bool OpenReader();
 	virtual void CloseReader();

@@ -170,6 +170,43 @@ void NxCoreTradeReader::ProcessQuoteMsg(const NxCoreSystem* pNxCoreSys, const Nx
 
 }
 
+/*
+	Deal with Category message. (Now just for open interest)
+*/
+void NxCoreTradeReader::ProcessCategoryMsg(const NxCoreSystem* pNxCoreSys, const NxCoreMessage* pNxCoreMessage) 
+{
+	const NxDate&	date = pNxCoreSys->nxDate;
+	const auto&		category = pNxCoreMessage->coreData.Category;
+
+	std::string symbol = this->getSymbol(pNxCoreMessage);
+	if (symbol.at(0) != 'o')
+	{
+		return;
+	}
+
+	switch (category.pnxStringCategory->Atom)
+	{
+	case 67:
+		if (category.pnxFields[0].Set == 1)
+		{
+			// Open Interest
+			int oi = category.pnxFields[0].data.i32Bit;
+
+			char lineBuffer[100];
+			// format trade item 
+			sprintf_s(lineBuffer, sizeof(lineBuffer),
+				"%.2d-%.2d-%.2d,"	//date 	// yy-MM-dd
+				"%s,"		// symbol
+				"%d\n"		// sequenceId
+				,
+				(int)(date.Year % 100), (int)date.Month, (int)date.Day,
+				symbol.c_str(),
+				oi);
+		}
+
+	}
+}
+
 bool NxCoreTradeReader::OpenReader()
 {
 	return this->outputStream->Open();
