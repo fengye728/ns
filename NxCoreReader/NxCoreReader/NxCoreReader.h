@@ -5,6 +5,10 @@
 
 #define	NSIGNAL_OPEN_READER_FAIL	-14
 
+// The type of record
+#define	RECORD_TYPE_TRADE	1
+#define	RECORD_TYPE_OI		2
+
 class NxCoreReader
 {
 public:

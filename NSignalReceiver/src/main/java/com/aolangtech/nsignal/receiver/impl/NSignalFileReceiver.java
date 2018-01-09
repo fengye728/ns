@@ -30,7 +30,7 @@ public class NSignalFileReceiver implements NSignalReceiver{
 		
 		handler = new OptionTradeHandlerContext();
 		
-		logger.info("Start to load records from file "+ filename + "...");
+		logger.info("Start to load records from file " + filename + "...");
 		String line;
 		long recordCount = 0;
 		while((line = this.receiveRecord()) != null) {

@@ -17,8 +17,7 @@ public interface OptionTradeMapper {
 	
 	OptionTradeModel selectByPrimaryKey(@Param("tableName") String tableName, @Param("id") Long id);
 	
-	int insert(OptionTradeModel record);
-	
 	int insertList(@Param("tableName") String tableName, @Param("recordList") List<OptionTradeModel> recordList);
 	
+	void createTable(@Param("tableName") String tableName);
 }

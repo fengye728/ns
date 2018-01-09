@@ -2,6 +2,11 @@ package com.aolangtech.nsignal.constants;
 
 public class CommonConstants {
 	
+	// --------------------- Record Type ----------------------
+	public final static int RECORD_TYPE_TRADE = 1;
+	
+	public final static int RECORD_TYPE_OI = 2;
+	
 	// --------------------- Trading Condition ----------------
 	public final static int TRADE_CONDITION_SPREAD = 35;
 	

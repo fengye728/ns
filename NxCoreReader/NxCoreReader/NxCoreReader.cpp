@@ -83,6 +83,7 @@ void NxCoreTradeReader::ProcessTradeMsg(const NxCoreSystem* pNxCoreSys, const Nx
 	char lineBuffer[200];
 	// format trade item 
 	sprintf_s(lineBuffer, sizeof(lineBuffer),
+		"%d,"		// type of record
 		"%.2d-%.2d-%.2d %.2d:%.2d:%.2d.%.3d,"	//date 	// yy-MM-dd hh:mm:ss.lll	
 		"%s,"		// symbol
 		"%.2lf,"	// price
@@ -102,6 +103,8 @@ void NxCoreTradeReader::ProcessTradeMsg(const NxCoreSystem* pNxCoreSys, const Nx
 		"%d,"		// condition
 		"%d\n"		// sequenceId
 		,
+
+		RECORD_TYPE_TRADE,
 		(int)(date.Year % 100), (int)date.Month, (int)date.Day, (int)t.Hour, (int)t.Minute, (int)t.Second, (int)t.Millisecond,
 		symbol.c_str(),
 		this->nxCoreClass.PriceToDouble(nt.Price, nt.PriceType),
@@ -195,16 +198,24 @@ void NxCoreTradeReader::ProcessCategoryMsg(const NxCoreSystem* pNxCoreSys, const
 			char lineBuffer[100];
 			// format trade item 
 			sprintf_s(lineBuffer, sizeof(lineBuffer),
-				"%.2d-%.2d-%.2d,"	//date 	// yy-MM-dd
-				"%s,"		// symbol
-				"%d\n"		// sequenceId
+				"%d,"	// type of record
+				"%.2d-%.2d-%.2d,"	// date:yy-MM-dd
+				"%s,"	// symbol of option
+				"%d\n"	// oi
 				,
+
+				RECORD_TYPE_OI,
 				(int)(date.Year % 100), (int)date.Month, (int)date.Day,
 				symbol.c_str(),
 				oi);
+
+			// output into output stream
+			this->outputStream->Write(lineBuffer);
 		}
+		break;
 
 	}
+
 }
 
 bool NxCoreTradeReader::OpenReader()

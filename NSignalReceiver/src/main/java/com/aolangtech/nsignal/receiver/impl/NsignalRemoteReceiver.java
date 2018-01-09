@@ -93,12 +93,12 @@ public class NsignalRemoteReceiver implements NSignalReceiver {
 	    @Override
 	    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 	    	complete(ctx.channel().remoteAddress().toString());
-	    	logger.info("Inactive Channel" + ctx.channel().remoteAddress());
+	    	logger.info("Inactive Channel " + ctx.channel().remoteAddress());
 	    }
 	    @Override
 	    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
 	            throws Exception {
-	    	logger.error(cause.getMessage());
+	    	logger.error("Error in " + ctx.channel().remoteAddress() + ": " + cause.getMessage());
 	    }
 	    
 	    protected void init() {
@@ -110,7 +110,7 @@ public class NsignalRemoteReceiver implements NSignalReceiver {
 	    	logger.info("Load records from " + remoteAddress + " -Count: " + readCount);
 	    	handler.processForMap();
 	    	// persist all records
-	    	Long count = handler.persist();
+	    	int count = handler.persist();
 	    	logger.info("Persist " + handler.getOptionTradeDate() + " records from " + remoteAddress + " -Count: " + count);
 	    }
 		

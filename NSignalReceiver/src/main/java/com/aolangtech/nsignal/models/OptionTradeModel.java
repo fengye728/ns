@@ -2,6 +2,7 @@ package com.aolangtech.nsignal.models;
 
 import com.aolangtech.nsignal.constants.CommonConstants;
 import com.aolangtech.nsignal.constants.CommonConstants.TickTestTradeCategory;
+import com.aolangtech.nsignal.utils.CommonUtil;
 
 public class OptionTradeModel {
 
@@ -110,18 +111,7 @@ public class OptionTradeModel {
 		}
 	}
 	
-	/**
-	 * Get the quarter(yyn) this record belong to.
-	 * 
-	 * @return
-	 */
-	public String getQuarter() {
-		int year = this.eventDay / 10000;
-		int quarterInYear = ((this.eventDay % 10000) / 100 - 1) / 3 + 1;
-		
-		return String.valueOf(year) + String.valueOf(quarterInYear);
-	}
-	
+
 	/**
 	 * Parse a option trade record to Class from string.
 	 * 
@@ -137,8 +127,15 @@ public class OptionTradeModel {
 		try{
 			OptionTradeModel result = new OptionTradeModel();
 			
-			parseDate(result, fields[0]);
-			parseSymbol(result, fields[1]);
+			Integer[] dayAndTime = CommonUtil.parseDayAndTime(fields[0]);
+			result.eventDay = dayAndTime[0];
+			result.eventTime = dayAndTime[1];
+			
+			String[] optionFields = CommonUtil.parseOptionSymbol(fields[1]);
+			result.stockSymbol = optionFields[0];
+			result.callPut = optionFields[1].charAt(0);
+			result.expiration = Integer.valueOf(optionFields[2]);
+			result.strike = Double.valueOf(optionFields[3]);
 			
 			result.price = Double.valueOf(fields[2]);
 			result.size = Integer.valueOf(fields[3]);
@@ -164,70 +161,6 @@ public class OptionTradeModel {
 		}
 		
 		
-	}
-	
-	/**
-	 * Get event date and event time of day from date and set these into result.
-	 * 
-	 * @param result
-	 * @param date
-	 */
-	private static void parseDate(OptionTradeModel result, String date){
-		// Input date format: yy-MM-dd hh:mm:ss.lll, length: 21
-		result.eventDay = getDigit(date.charAt(0)) * 100000 + getDigit(date.charAt(1)) * 10000	// yy
-				+ getDigit(date.charAt(3)) * 1000 + getDigit(date.charAt(4)) * 100				// MM
-				+ getDigit(date.charAt(6)) * 10 + getDigit(date.charAt(7));						// dd
-		
-		result.eventTime = getDigit(date.charAt(9)) * 100000000 + getDigit(date.charAt(10)) * 10000000	// hh
-				+ getDigit(date.charAt(12)) * 1000000 + getDigit(date.charAt(13)) * 100000				// mm
-				+ getDigit(date.charAt(15)) * 10000 + getDigit(date.charAt(16)) * 1000					// ss
-				+ getDigit(date.charAt(18)) * 100 + getDigit(date.charAt(19)) * 10 + getDigit(date.charAt(20));	// lll
-	
-	}
-	
-	/**
-	 * Get stock symbol, option expiration date, option type and option strike price from input symbol and set these into result.
-	 * 
-	 * @param result
-	 * @param symbol
-	 * @throws Exception
-	 */
-	private static void parseSymbol(OptionTradeModel result, String symbol) throws Exception{
-		if(symbol.charAt(0) != 'o'){
-			throw new Exception("The trade is not option trade!");
-		}
-		
-		int stockSymbolBeginIndex = 1;
-		int stockSymbolEndIndex = 1;
-		int symbolLength = symbol.length();
-		int index = 0;
-		
-		// get stock symbol
-		while((++index) < symbolLength && !Character.isDigit(symbol.charAt(index)));
-		stockSymbolEndIndex = index;
-		result.stockSymbol = symbol.substring(stockSymbolBeginIndex, stockSymbolEndIndex);
-		
-		// get option type and its index
-		while((++index) < symbolLength) {
-			char ch = symbol.charAt(index);
-			if(ch == CommonConstants.OPTION_TRADE_OPTION_TYPE_CALL
-					|| ch == CommonConstants.OPTION_TRADE_OPTION_TYPE_PUT) {
-				
-				result.callPut = ch;
-				break;
-			}
-		}
-		
-		// get option expiration date
-		result.expiration = Integer.valueOf(symbol.substring(stockSymbolEndIndex, index));
-		
-		// get option strike price
-		result.strike = (Integer.valueOf(symbol.substring(index + 1, symbolLength)) / 1000.0);
-		
-	}
-	
-	private static int getDigit(char ch){
-		return ch - '0';
 	}
 
 	public Long getId() {

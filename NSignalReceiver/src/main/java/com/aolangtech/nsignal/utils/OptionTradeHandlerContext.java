@@ -8,20 +8,46 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.aolangtech.nsignal.constants.CommonConstants;
 import com.aolangtech.nsignal.models.OptionTradeModel;
 import com.aolangtech.nsignal.services.OptionTradeService;
 import com.aolangtech.nsignal.services.impl.OptionTradeServiceImpl;
 
 public class OptionTradeHandlerContext{
 	
-	private Map<String, List<OptionTradeModel>> symbolMap = new HashMap<>();;	//  <Stock symbol, List of trade>
+	private Map<String, List<OptionTradeModel>> tradeMap = new HashMap<>();;	//  <Stock symbol, List of trade>
+
+	private OptionTradeService optionTradeService = new OptionTradeServiceImpl();
 	
 	/**
-	 * Handles one line record and stores the result into symbolMap.
+	 * Handles one line record and stores the result into tradeMap.
 	 * 
 	 * @param recordLine
 	 */
-	public boolean handleOneLineRecord(String recordLine) {
+	public boolean handleOneLineRecord(String msg) {
+		// get message type
+		int msgEndIndex = msg.indexOf(CommonConstants.OPTION_TRADE_RECORD_SEPARATOR);
+		if(msgEndIndex == -1) {
+			return false;
+		}
+		int msgType = Integer.valueOf(msg.substring(0, msgEndIndex));
+		String record = msg.substring(msgEndIndex + 1);
+		boolean status = false;
+		
+		// process record depend on message type
+		switch(msgType) {
+		case CommonConstants.RECORD_TYPE_TRADE:
+			status = handleTrade(record);
+			break;
+		case CommonConstants.RECORD_TYPE_OI:
+			status = handleOI(record);
+			break;
+		}
+		
+		return status;
+	}
+	
+	private boolean handleTrade(String recordLine) {
 		if(null == recordLine)
 			return false;
 		
@@ -43,6 +69,13 @@ public class OptionTradeHandlerContext{
 		// add the record into map.
 		addOptionTrade2Map(record);
 		
+		return true;		
+	}
+	
+	private boolean handleOI(String recordLine) {
+		if(null == recordLine)
+			return false;
+		
 		return true;
 	}
 	
@@ -52,7 +85,7 @@ public class OptionTradeHandlerContext{
 	 * @return
 	 */
 	public int getOptionTradeDate() {
-		Collection<List<OptionTradeModel>> values = symbolMap.values();
+		Collection<List<OptionTradeModel>> values = tradeMap.values();
 		if(!values.isEmpty())
 			return values.iterator().next().get(0).getEventDay();
 		else
@@ -65,16 +98,11 @@ public class OptionTradeHandlerContext{
 	 * 
 	 * @return The number of records persisted.
 	 */
-	public long persist() {
-		OptionTradeService optionTradeService = new OptionTradeServiceImpl();
-		long persistCount = 0;
+	public int persist() {
+		int count = 0;
+		count += optionTradeService.insertByMap(tradeMap);
 		
-		for(List<OptionTradeModel> list : symbolMap.values()) {			
-			persistCount += optionTradeService.insertList(list);
-
-		}
-		return persistCount;
-
+		return count;
 	}
 	
 	/**
@@ -88,12 +116,12 @@ public class OptionTradeHandlerContext{
 	}
 
 	/**
-	 * Find trade leg in symbolMap.
+	 * Find trade leg in tradeMap.
 	 * 
 	 */
 	private void combineTradeLeg() {
 		// classify by reportExg and filter condition
-		for(List<OptionTradeModel> tradeList : symbolMap.values()) {
+		for(List<OptionTradeModel> tradeList : tradeMap.values()) {
 			// <ReportExg, List of optionTrade which is leg condition>
 			Map<Short, List<OptionTradeModel>> exgLegMap = tradeList.stream().filter( optionTrade -> optionTrade.isLegCondition()).collect(Collectors.groupingBy(OptionTradeModel::getReportExg));
 			
@@ -156,7 +184,7 @@ public class OptionTradeHandlerContext{
 	 * @return the last option trade record if existed, otherwise null.
 	 */
 	private OptionTradeModel findLastTrade(OptionTradeModel record) {
-		List<OptionTradeModel> tradeList = symbolMap.get(record.getStockSymbol());
+		List<OptionTradeModel> tradeList = tradeMap.get(record.getStockSymbol());
 		
 		if(null != tradeList) {
 			OptionTradeModel tmp;
@@ -178,13 +206,13 @@ public class OptionTradeHandlerContext{
 	 * @param record
 	 */
 	private void addOptionTrade2Map(OptionTradeModel record) {
-		List<OptionTradeModel> tradeList = symbolMap.get(record.getStockSymbol());
+		List<OptionTradeModel> tradeList = tradeMap.get(record.getStockSymbol());
 		
 		if(null == tradeList) {
 			tradeList = new ArrayList<>();
 			tradeList.add(record);
 			
-			symbolMap.put(record.getStockSymbol(), tradeList);
+			tradeMap.put(record.getStockSymbol(), tradeList);
 		} else {
 			tradeList.add(record);
 		}

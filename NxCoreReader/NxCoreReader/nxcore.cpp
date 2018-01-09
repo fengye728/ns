@@ -31,6 +31,7 @@ int __stdcall nxCoreCallbackForTrade(const NxCoreSystem* pNxCoreSys, const NxCor
 
 	//NxCoreTradeReader* pReader = (NxCoreTradeReader *)pNxCoreSys->UserData;
 	NxCoreTradeReader* pReader = reader;
+
 #ifdef NSIGNAL_DEBUG_
 	unsigned static char preMin;
 	static clock_t preTime;
@@ -47,7 +48,6 @@ int __stdcall nxCoreCallbackForTrade(const NxCoreSystem* pNxCoreSys, const NxCor
 	switch (pNxCoreMessage->MessageType)
 	{
 	case NxMSG_TRADE:
-	{
 		if (t.MsOfDay > CLOSE_MARKET_MSOFDAY)
 			return NxCALLBACKRETURN_STOP;
 		if (t.MsOfDay < OPEN_MARKET_MSOFDAY)
@@ -56,13 +56,15 @@ int __stdcall nxCoreCallbackForTrade(const NxCoreSystem* pNxCoreSys, const NxCor
 		pReader->ProcessTradeMsg(pNxCoreSys, pNxCoreMessage);
 
 		break;
-	}
 	case NxMSG_EXGQUOTE:
 		if (t.MsOfDay > CLOSE_MARKET_MSOFDAY)
 			return NxCALLBACKRETURN_STOP;
 		if (t.MsOfDay < OPEN_MARKET_MSOFDAY)
 			break;
 		pReader->ProcessQuoteMsg(pNxCoreSys, pNxCoreMessage);
+		break;
+	case NxMSG_CATEGORY:
+		pReader->ProcessCategoryMsg(pNxCoreSys, pNxCoreMessage);
 		break;
 	}
 	return NxCALLBACKRETURN_CONTINUE;

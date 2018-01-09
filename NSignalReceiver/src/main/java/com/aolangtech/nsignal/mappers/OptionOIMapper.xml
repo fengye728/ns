@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aolangtech.nsignal.mappers.OptionOIMapper">
+
+  <resultMap id="BaseResultMap" type="com.aolangtech.nsignal.models.OptionOIModel">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="stock_symbol" property="stockSymbol" />
+    <result column="event_day" property="eventDay" />
+    <result column="expiration" property="expiration" />
+    <result column="call_put" property="callPut" />
+    <result column="strike" property="strike" />
+    
+    <result column="event_time" property="eventTime" />
+    <result column="price" property="price" />
+    <result column="open_interest" property="openInterest" />
+
+  </resultMap>
+  
+  <sql id="BaseColumnList">
+   		stock_symbol, 
+    	event_day, 
+  		expiration, 
+  		call_put,
+  		strike,
+  		open_interest	
+  </sql>
+  
+  <update id="createTable">
+  	CREATE TABLE IF NOT EXISTS ${tableName}
+  	(
+  	    id bigserial PRIMARY KEY,
+	    stock_symbol character(6) DEFAULT NULL,
+	    expiration integer,
+	    call_put character(1) DEFAULT NULL,
+	    strike numeric(10, 3) DEFAULT NULL,
+	    event_day integer,
+	    event_time integer,
+	    price numeric(10, 3) DEFAULT NULL,
+	    size integer,
+	    previous_price numeric(10, 3) DEFAULT NULL,
+	    ask_price numeric(10, 3) DEFAULT NULL,
+	    trade_ask_interval integer,
+	    ask_ask_interval integer,
+	    bid_price numeric(10, 3) DEFAULT NULL,
+	    trade_bid_interval integer,
+	    bid_bid_interval integer,
+	    report_exg smallint,
+	    condition smallint,
+	    sequence_id bigint,
+	    direction character(9) DEFAULT NULL,
+	    leg_sequence_id integer,
+	    big_trade boolean
+  	)
+  </update>
+  
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+  	SELECT *
+  	FROM ${tableName}
+  	WHERE id = ${id}
+  </select>
+  
+  <insert id="insertList" keyColumn="id" >
+  	INSERT INTO ${tableName}(
+		<include refid="BaseColumnList"></include>
+	)
+  	VALUES 
+  	<foreach item="item" collection="recordList" separator=",">
+        (
+        #{item.stockSymbol},
+        #{item.eventDay},
+        #{item.expiration},
+        #{item.callPut},
+        #{item.strike},
+        #{item.openInterest},
+        )
+  	</foreach>
+  </insert>
+  
+</mapper>
