@@ -22,6 +22,8 @@ public class CommonConstants {
 	
 	public final static int OPTION_TRADE_RECORD_FIELD_NUMBER = 14;
 	
+	public final static int OPTION_OI_RECORD_FIELD_NUMBER = 3;
+	
 	public final static String LOGGER_PROPERTY_PATH = "log4j.properties";
 	
 	public final static String APPLICATION_CONFIG_FILE_NAME = "nsignal.properties";

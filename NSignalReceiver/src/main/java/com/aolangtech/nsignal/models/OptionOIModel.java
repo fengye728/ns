@@ -1,5 +1,8 @@
 package com.aolangtech.nsignal.models;
 
+import com.aolangtech.nsignal.constants.CommonConstants;
+import com.aolangtech.nsignal.utils.CommonUtil;
+
 public class OptionOIModel {
 
 	private String stockSymbol;
@@ -62,5 +65,34 @@ public class OptionOIModel {
 		this.openInterest = openInterest;
 	}
 	
-	
+	public static OptionOIModel parse(String record) {
+		if(record == null) {
+			return null;
+		}
+		
+		String[] fields = record.split(CommonConstants.OPTION_TRADE_RECORD_SEPARATOR);
+		if(fields.length != CommonConstants.OPTION_OI_RECORD_FIELD_NUMBER) {
+			return null;
+		}
+		
+		try {
+			OptionOIModel result = new OptionOIModel();
+			
+			result.eventDay = CommonUtil.parseDay(fields[0]);
+			
+			String[] optionFields = CommonUtil.parseOptionSymbol(fields[1]);
+			result.stockSymbol = optionFields[0];
+			result.callPut = optionFields[1].charAt(0);
+			result.expiration = Integer.valueOf(optionFields[2]);
+			result.strike = Double.valueOf(optionFields[3]);
+			
+			result.openInterest = Integer.valueOf(fields[2]);
+			
+			return result;
+		} catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+	}
 }

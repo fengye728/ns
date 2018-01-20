@@ -180,7 +180,6 @@ void NxCoreTradeReader::ProcessCategoryMsg(const NxCoreSystem* pNxCoreSys, const
 {
 	const NxDate&	date = pNxCoreSys->nxDate;
 	const auto&		category = pNxCoreMessage->coreData.Category;
-
 	std::string symbol = this->getSymbol(pNxCoreMessage);
 	if (symbol.at(0) != 'o')
 	{

@@ -1,6 +1,6 @@
 #include"stdafx.h"
 
-#define NSIGNAL_DEBUG_
+//#define NSIGNAL_DEBUG_
 
 #include<time.h>
 #include<string>

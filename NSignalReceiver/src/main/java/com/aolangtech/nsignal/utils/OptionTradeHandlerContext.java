@@ -9,15 +9,22 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.aolangtech.nsignal.constants.CommonConstants;
+import com.aolangtech.nsignal.models.OptionOIModel;
 import com.aolangtech.nsignal.models.OptionTradeModel;
+import com.aolangtech.nsignal.services.OptionOIService;
 import com.aolangtech.nsignal.services.OptionTradeService;
+import com.aolangtech.nsignal.services.impl.OptionOIServiceImpl;
 import com.aolangtech.nsignal.services.impl.OptionTradeServiceImpl;
 
 public class OptionTradeHandlerContext{
 	
 	private Map<String, List<OptionTradeModel>> tradeMap = new HashMap<>();;	//  <Stock symbol, List of trade>
+	
+	private List<OptionOIModel> oiList = new ArrayList<>();						// list of oi model
 
 	private OptionTradeService optionTradeService = new OptionTradeServiceImpl();
+	
+	private OptionOIService optionOIService = new OptionOIServiceImpl();
 	
 	/**
 	 * Handles one line record and stores the result into tradeMap.
@@ -72,9 +79,21 @@ public class OptionTradeHandlerContext{
 		return true;		
 	}
 	
+	/**
+	 * Handle OI record and add valid record into oiList
+	 * @param recordLine
+	 * @return
+	 */
 	private boolean handleOI(String recordLine) {
 		if(null == recordLine)
 			return false;
+		
+		OptionOIModel record = OptionOIModel.parse(recordLine);
+		if(record == null) {
+			return false;
+		}
+		
+		oiList.add(record);
 		
 		return true;
 	}
@@ -99,10 +118,8 @@ public class OptionTradeHandlerContext{
 	 * @return The number of records persisted.
 	 */
 	public int persist() {
-		int count = 0;
-		count += optionTradeService.insertByMap(tradeMap);
-		
-		return count;
+		optionOIService.insertList(oiList);
+		return optionTradeService.insertByMap(tradeMap);
 	}
 	
 	/**

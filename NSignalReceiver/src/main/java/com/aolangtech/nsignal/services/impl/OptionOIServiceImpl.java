@@ -59,6 +59,7 @@ public class OptionOIServiceImpl implements OptionOIService {
 			int left = list.size();
 			
 			while(left > 0) {
+				// TODO need to do exception handling
 				int newCount = mapper.insertList(tableName, list.subList(count, left < MAX_INSERT_RECORDS_NUM ? count + left : count + MAX_INSERT_RECORDS_NUM));
 				count += newCount;
 				left -= newCount;
