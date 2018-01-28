@@ -1,5 +1,8 @@
 package com.aolangtech.nsignal.utils;
 
+import java.text.ParseException;
+import java.util.Date;
+
 import com.aolangtech.nsignal.constants.CommonConstants;
 
 public class CommonUtil {
@@ -81,7 +84,31 @@ public class CommonUtil {
 				+ getDigit(date.charAt(6)) * 10 + getDigit(date.charAt(7));						// dd
 	
 		return result;
-	}	
+	}
+	
+	/**
+	 * Convert int date to date date.
+	 * @param nDate
+	 * @return
+	 */
+	public static Date nDate2dDate(Integer nDate) {
+		
+		try {
+			return CommonConstants.DAY_DATE_FORMATTER.parse("" + nDate);
+		} catch (ParseException e) {
+			return null;
+		}
+		
+	}
+	
+	/**
+	 * Convert date date to int date
+	 * @param dDate
+	 * @return
+	 */
+	public static Integer dDate2nDate(Date dDate) {
+		return Integer.valueOf(CommonConstants.DAY_DATE_FORMATTER.format(dDate));
+	}
 	
 	/**
 	 * Get the quarter(yyn) this record belong to.

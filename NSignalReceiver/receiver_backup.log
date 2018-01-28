@@ -1,0 +1,9 @@
+2018-01-28 13:28:21 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(53) -Property server.port : 8080
+2018-01-28 13:28:21 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(54) -Property db.driverClassName : org.postgresql.Driver
+2018-01-28 13:28:21 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(55) -Property db.url : jdbc:postgresql://192.168.100.249:5432/aolang
+2018-01-28 13:28:31 [ERROR] - com.aolangtech.nsignal.Application -Application.java(58) -Argument Error: too much or too little arguments!
+2018-01-28 13:31:37 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(53) -Property server.port : 8080
+2018-01-28 13:31:37 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(54) -Property db.driverClassName : org.postgresql.Driver
+2018-01-28 13:31:37 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(55) -Property db.url : jdbc:postgresql://192.168.100.249:5432/aolang
+2018-01-28 13:32:15 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(33) -Start to load records from file D:\20160811.DO.nxc.trade...
+2018-01-28 13:34:53 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(41) -Load records success. Count of records: 1766248

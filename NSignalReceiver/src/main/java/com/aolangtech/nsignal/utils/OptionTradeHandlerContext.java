@@ -1,8 +1,10 @@
 package com.aolangtech.nsignal.utils;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +95,13 @@ public class OptionTradeHandlerContext{
 			return false;
 		}
 		
+		Date eventDay = CommonUtil.nDate2dDate(record.getEventDay());
+		
+		Calendar date = Calendar.getInstance();
+		date.setTime(eventDay);
+		date.set(Calendar.DATE, date.get(Calendar.DATE) - 1);
+		
+		record.setEventDay(CommonUtil.dDate2nDate(date.getTime()));
 		oiList.add(record);
 		
 		return true;
