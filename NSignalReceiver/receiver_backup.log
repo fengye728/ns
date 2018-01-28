@@ -7,3 +7,31 @@
 2018-01-28 13:31:37 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(55) -Property db.url : jdbc:postgresql://192.168.100.249:5432/aolang
 2018-01-28 13:32:15 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(33) -Start to load records from file D:\20160811.DO.nxc.trade...
 2018-01-28 13:34:53 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(41) -Load records success. Count of records: 1766248
+2018-01-28 17:32:07 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(53) -Property server.port : 8080
+2018-01-28 17:32:07 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(54) -Property db.driverClassName : org.postgresql.Driver
+2018-01-28 17:32:07 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(55) -Property db.url : jdbc:postgresql://54.210.133.145:6432/aolang
+2018-01-28 17:32:07 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(33) -Start to load records from file D:\20160811.DO.nxc.trade...
+2018-01-28 17:32:25 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(53) -Property server.port : 8080
+2018-01-28 17:32:25 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(54) -Property db.driverClassName : org.postgresql.Driver
+2018-01-28 17:32:25 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(55) -Property db.url : jdbc:postgresql://54.210.133.145:6432/aolang
+2018-01-28 17:32:25 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(33) -Start to load records from file D:\20160811.DO.nxc.trade...
+2018-01-28 17:33:12 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(53) -Property server.port : 8080
+2018-01-28 17:33:12 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(54) -Property db.driverClassName : org.postgresql.Driver
+2018-01-28 17:33:12 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(55) -Property db.url : jdbc:postgresql://54.210.133.145:6432/aolang
+2018-01-28 17:33:12 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(33) -Start to load records from file D:\20160811.DO.nxc.trade...
+2018-01-28 17:37:05 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(41) -Load records success. Count of records: 1766248
+2018-01-28 17:39:20 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(53) -Property server.port : 8080
+2018-01-28 17:39:20 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(54) -Property db.driverClassName : org.postgresql.Driver
+2018-01-28 17:39:20 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(55) -Property db.url : jdbc:postgresql://54.210.133.145:6432/aolang
+2018-01-28 17:39:20 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(33) -Start to load records from file D:\20160811.DO.nxc.trade...
+2018-01-28 17:40:27 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(41) -Load records success. Count of records: 1766248
+2018-01-28 17:41:57 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(53) -Property server.port : 8080
+2018-01-28 17:41:57 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(54) -Property db.driverClassName : org.postgresql.Driver
+2018-01-28 17:41:57 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(55) -Property db.url : jdbc:postgresql://54.210.133.145:6432/aolang
+2018-01-28 17:41:57 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(33) -Start to load records from file D:\20160811.DO.nxc.trade...
+2018-01-28 17:43:04 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(41) -Load records success. Count of records: 1766248
+2018-01-28 17:45:30 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(53) -Property server.port : 8080
+2018-01-28 17:45:30 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(54) -Property db.driverClassName : org.postgresql.Driver
+2018-01-28 17:45:30 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(55) -Property db.url : jdbc:postgresql://54.210.133.145:6432/aolang
+2018-01-28 17:45:31 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(33) -Start to load records from file D:\20160811.DO.nxc.trade...
+2018-01-28 17:46:37 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(41) -Load records success. Count of records: 1766248

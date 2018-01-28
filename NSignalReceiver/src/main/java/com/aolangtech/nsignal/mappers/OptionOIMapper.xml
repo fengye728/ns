@@ -30,11 +30,11 @@
   	(
 	  "id" bigserial PRIMARY KEY,
 	  "stock_symbol" char(6) DEFAULT NULL,
-	  "expiration" int2 DEFAULT NULL,
+	  "expiration" integer DEFAULT NULL,
 	  "call_put" char(1) DEFAULT NULL,
 	  "strike" numeric(10,3) DEFAULT NULL,
-	  "event_day" int2 DEFAULT NULL,
-	  "open_interest" int4 DEFAULT NULL,
+	  "event_day" integer DEFAULT NULL,
+	  "open_interest" integer DEFAULT NULL,
 	  
 	  CONSTRAINT oi_unique UNIQUE(event_day, stock_symbol, expiration, call_put, strike)
 	 )
@@ -59,9 +59,10 @@
         #{item.expiration},
         #{item.callPut},
         #{item.strike},
-        #{item.openInterest},
+        #{item.openInterest}
         )
   	</foreach>
+  	
   	ON CONFLICT ON CONSTRAINT oi_unique DO NOTHING
   </insert>
   
