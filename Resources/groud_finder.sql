@@ -51,11 +51,33 @@ WHERE call_put = 'C'
 	)
 ORDER BY stock_symbol, event_day, event_time
 
+-- Big Trade Event Day Search --------
+SELECT stock_symbol, event_day, call_put, strike, expiration, SUM(size) as volume, SUM(size * price) / 10000 as millD
+FROM option_trade_181
+WHERE stock_symbol = 'AAPL'
+	AND event_day BETWEEN 180100 AND 180131
+    AND expiration - event_day > 300
+GROUP BY stock_symbol, event_day, call_put, strike, expiration
+HAVING SUM(size * price) / 10000 > 1
+ORDER BY millD DESC
+
+-- Specified Option millD Search ----
+SELECT stock_symbol, strike, expiration, SUBSTRING(direction, 1, 1) as direc, COUNT(*) AS group_count,SUM(size) as volume, SUM(size * price) / 10000 as millD
+FROM option_trade_181
+WHERE stock_symbol = 'AAPL'
+	AND event_day BETWEEN 180100 AND 180131
+    AND expiration = 180720
+    AND strike = 90
+    AND call_put = 'C'
+GROUP BY stock_symbol, call_put, strike, expiration, direc
+ORDER BY millD DESC
+
 -- Normal search --
 SELECT stock_symbol, event_day, event_time / 1000 as event_time, call_put, expiration, strike, size, price, direction, condition, sequence_id, leg_sequence_id
-FROM option_trade_171
-WHERE stock_symbol = 'C'
-	AND event_day = 170308
-    AND expiration = 190118
-    AND strike = 85
+FROM option_trade_181
+WHERE stock_symbol = 'AAPL'
+	AND event_day = 180109
+    AND expiration = 200117
+    AND strike = 100
+    AND call_put = 'C'
 ORDER BY stock_symbol, event_day, event_time
