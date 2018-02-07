@@ -40,7 +40,7 @@ public class Application {
 		// initialize database
 		DataSource ds = new PooledDataSource(config.getDbDriverClassName(), config.getDbUrl(), config.getDbUsername(), config.getDbPassword());
 		TransactionFactory txnFactory = new JdbcTransactionFactory();
-		Environment environment = new Environment("devlopmente", txnFactory, ds);
+		Environment environment = new Environment("devlopment", txnFactory, ds);
 		
 		Configuration configuration = new Configuration(environment);
 		

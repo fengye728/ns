@@ -150,7 +150,6 @@ void NxCoreTradeReader::ProcessQuoteMsg(const NxCoreSystem* pNxCoreSys, const Nx
 {
 	QuotePair ask;
 	QuotePair bid;
-
 	std::string symbol = this->getSymbol(pNxCoreMessage);
 	auto optInfo = findOrCreateOptionInfo(symbol);
 	if (symbol.at(0) != 'o')

@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
+
 import com.aolangtech.nsignal.constants.CommonConstants;
 import com.aolangtech.nsignal.models.OptionOIModel;
 import com.aolangtech.nsignal.models.OptionTradeModel;
@@ -20,9 +22,11 @@ import com.aolangtech.nsignal.services.impl.OptionTradeServiceImpl;
 
 public class OptionTradeHandlerContext{
 	
+	private static Logger logger = Logger.getLogger(OptionTradeHandlerContext.class);
+	
 	private Map<String, List<OptionTradeModel>> tradeMap = new HashMap<>();;	//  <Stock symbol, List of trade>
 	
-	private List<OptionOIModel> oiList = new ArrayList<>();						// list of oi model
+	private Map<String ,OptionOIModel> oiMap = new HashMap<>();					// oi model of <Option_Symbol, oiModel>
 
 	private OptionTradeService optionTradeService = new OptionTradeServiceImpl();
 	
@@ -30,6 +34,8 @@ public class OptionTradeHandlerContext{
 	
 	/**
 	 * Handles one line record and stores the result into tradeMap.
+	 * 
+	 * 	PS: Stripped the message type.
 	 * 
 	 * @param recordLine
 	 */
@@ -83,6 +89,8 @@ public class OptionTradeHandlerContext{
 	
 	/**
 	 * Handle OI record and add valid record into oiList
+	 * 
+	 * 	// OI records of one day contain the previous previous day oi and previous day oi
 	 * @param recordLine
 	 * @return
 	 */
@@ -91,6 +99,7 @@ public class OptionTradeHandlerContext{
 			return false;
 		
 		OptionOIModel record = OptionOIModel.parse(recordLine);
+		String recordOSymbol = OptionOIModel.parseOptionSymbol(recordLine);
 		if(record == null) {
 			return false;
 		}
@@ -102,8 +111,13 @@ public class OptionTradeHandlerContext{
 		date.set(Calendar.DATE, date.get(Calendar.DATE) - 1);
 		
 		record.setEventDay(CommonUtil.dDate2nDate(date.getTime()));
-		oiList.add(record);
 		
+		// insert or update oi
+		if (oiMap.containsKey(recordOSymbol)) {
+			oiMap.get(recordOSymbol).setOpenInterest(record.getOpenInterest());
+		} else {
+			oiMap.put(recordOSymbol, record);
+		}
 		return true;
 	}
 	
@@ -127,8 +141,12 @@ public class OptionTradeHandlerContext{
 	 * @return The number of records persisted.
 	 */
 	public int persist() {
-		optionOIService.insertList(oiList);
-		return optionTradeService.insertByMap(tradeMap);
+		int tradeDate = this.getOptionTradeDate();
+		int oiRecordCount = optionOIService.insertList(new ArrayList<OptionOIModel>(oiMap.values()));
+		logger.info("Persist OI records success - Date of "+ tradeDate + ". Count: " + oiRecordCount);
+		int tradeRecordCount = optionTradeService.insertByMap(tradeMap);
+		logger.info("Persist trade records success - Date of "+ tradeDate + ". Count: " + tradeRecordCount);
+		return oiRecordCount + tradeRecordCount;
 	}
 	
 	/**

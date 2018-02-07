@@ -21,7 +21,7 @@ WHERE
     AND call_put = 'P'
     AND direction LIKE 'Sell%'
     AND expiration - event_day > 300
-	AND stock_symbol NOT IN ('SPY', 'SPX', 'SPXW', 'SVXY', 'QQQ', 'VXX', 'UVXY', 'DUST', 'JDST', 'RUT', 'RUTW')
+	AND stock_symbol NOT IN ('DUST', 'JDST', 'RUT', 'RUTW')
 
 GROUP BY event_day, stock_symbol, strike, expiration, size
 HAVING sum(size) >= 100 AND COUNT(size) >= 20
@@ -50,6 +50,15 @@ WHERE call_put = 'C'
 			AND o2.sequence_id = o1.leg_sequence_id	
 	)
 ORDER BY stock_symbol, event_day, event_time
+
+-- One Spread Search ----------------
+SELECT stock_symbol, event_day, event_time / 1000 as event_time, call_put, expiration, strike, size, price, direction, condition, sequence_id, leg_sequence_id
+FROM option_trade_181
+WHERE stock_symbol = 'SNAP'
+	AND event_day = 180118
+	AND ( sequence_id = 49585533 OR leg_sequence_id = 49585533)
+ORDER BY stock_symbol, event_day, event_time
+
 
 -- Big Trade Event Day Search --------
 SELECT stock_symbol, event_day, call_put, strike, expiration, SUM(size) as volume, SUM(size * price) / 10000 as millD

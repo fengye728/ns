@@ -20,7 +20,7 @@ import com.aolangtech.nsignal.utils.CommonUtil;
 
 public class OptionTradeServiceImpl implements OptionTradeService {
 	
-	private static final int MAX_INSERT_RECORDS_NUM = 1000;
+	// private static final int MAX_INSERT_RECORDS_NUM = 1000;
 	
 	private static String tradeTablePrefix = "option_trade_";
 	
@@ -54,20 +54,28 @@ public class OptionTradeServiceImpl implements OptionTradeService {
 			OptionTradeMapper mapper = this.openMapper();
 			String quarter = CommonUtil.getQuarterByDay(list.get(0).getEventDay());
 			
+			int failCount = 0;
 			int count = 0;
-			int left = list.size();
 			
-			while(left > 0) {
-				int newCount = mapper.insertList(tradeTablePrefix + quarter, list.subList(count, left < MAX_INSERT_RECORDS_NUM ? count + left : count + MAX_INSERT_RECORDS_NUM));
-				count += newCount;
-				left -= newCount;
+			for(count = 0; count < list.size(); count++) {
+				// insert one by one
+				try {
+					mapper.insert(tradeTablePrefix + quarter, list.get(count));
+					session.commit();
+				} catch (Exception ex) {
+					session.rollback();
+					++failCount;
+				}			
 			}
 			
 			this.closeMapper();
-			return count;
+			return count - failCount;
 		}
 	}
 
+	/**
+	 * Insert records of one day.
+	 */
 	@Override
 	public int insertByMap(Map<String, List<OptionTradeModel>> tradeMap) {
 		int persistCount = 0;
@@ -77,7 +85,10 @@ public class OptionTradeServiceImpl implements OptionTradeService {
 		String tableName = tradeTablePrefix + CommonUtil.getQuarterByDay(eventDay);
 		OptionTradeMapper mapper = this.openMapper();
 		mapper.createTable(tableName);
+		// clear old records of specified day
+		mapper.deleteByEventDay(tableName, eventDay);
 		this.closeMapper();
+		
 		
 		// insert trades
 		for(List<OptionTradeModel> list : tradeMap.values()) {			

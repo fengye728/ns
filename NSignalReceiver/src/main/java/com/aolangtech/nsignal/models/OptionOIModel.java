@@ -95,4 +95,22 @@ public class OptionOIModel {
 		}
 		
 	}
+	
+	public static String parseOptionSymbol(String record) {
+		String[] fields = record.split(CommonConstants.OPTION_TRADE_RECORD_SEPARATOR);
+		return fields[1];
+	}
+	
+	
+	/**
+	 * Use to filter the previous previous day oi and previous oi.
+	 * @param obj
+	 * @return
+	 */
+	public boolean isSameOIRecord(OptionOIModel item) {
+		if(this.stockSymbol.equals(item.stockSymbol) && this.strike == item.strike && this.callPut == item.callPut && this.expiration == item.expiration && this.eventDay == item.eventDay)
+			return true;
+		else
+			return false;
+	}
 }

@@ -87,6 +87,66 @@
   	FROM ${tableName}
   	WHERE id = ${id}
   </select>
+
+  <insert id="insert" keyColumn="id" >
+  	INSERT INTO ${tableName}(
+		<include refid="BaseColumnList"></include>
+	)
+  	VALUES 
+        (
+        #{item.stockSymbol},
+        #{item.expiration},
+        #{item.callPut},
+        #{item.strike},
+        #{item.eventDay},
+        #{item.eventTime},
+        #{item.price},
+        #{item.size},
+        #{item.previousPrice},
+        
+        #{item.askPrice},
+        #{item.tradeAskInterval},
+        #{item.askAskInterval},
+        
+        #{item.bidPrice},
+        #{item.tradeBidInterval},
+        #{item.bidBidInterval},
+        
+        #{item.reportExg},
+        #{item.condition},
+        #{item.sequenceId},
+        <choose>
+        	<when test=" item.direction == null">
+        		NULL,
+        	</when>
+        	<otherwise>
+        		#{item.direction},
+        	</otherwise>
+        </choose>
+	        
+        <choose>
+        	<when test=" item.legSequenceId == null">
+        		NULL,
+        	</when>
+        	<otherwise>
+        		${item.legSequenceId},
+        	</otherwise>
+        </choose>     
+        <choose>
+        	<when test=" item.bigTrade == null">
+        		NULL
+        	</when>
+        	<otherwise>
+        		${item.bigTrade}
+        	</otherwise>
+        </choose>
+        )
+  </insert>
+  
+  <delete id="deleteByEventDay">
+  	DELETE FROM ${tableName}
+  	WHERE event_day = ${eventDay}
+  </delete>
   
   <insert id="insertList" keyColumn="id" >
   	INSERT INTO ${tableName}(

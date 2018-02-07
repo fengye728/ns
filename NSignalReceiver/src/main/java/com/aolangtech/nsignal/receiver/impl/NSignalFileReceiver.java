@@ -44,7 +44,7 @@ public class NSignalFileReceiver implements NSignalReceiver{
 		
 		// persist data
 		recordCount = handler.persist();
-		logger.info("Persist records success - Date of " + handler.getOptionTradeDate() + ". Count of records: " + recordCount);
+		logger.info("Persist all records success - Date of " + handler.getOptionTradeDate() + ". Count of records: " + recordCount);
 	}
 	
 	/**

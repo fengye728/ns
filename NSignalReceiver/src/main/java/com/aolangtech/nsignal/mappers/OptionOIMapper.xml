@@ -47,6 +47,27 @@
   	WHERE id = ${id}
   </select>
   
+  <delete id="deleteByEventDay">
+  	DELETE FROM ${tableName}
+  	WHERE event_day = ${eventDay}
+  </delete>
+  
+  
+  <insert id="insert" keyColumn="id" >
+  	INSERT INTO ${tableName}(
+		<include refid="BaseColumnList"></include>
+	)
+  	VALUES 
+        (
+        #{item.stockSymbol},
+        #{item.eventDay},
+        #{item.expiration},
+        #{item.callPut},
+        #{item.strike},
+        #{item.openInterest}
+        )
+  </insert>
+    
   <insert id="insertList" keyColumn="id" >
   	INSERT INTO ${tableName}(
 		<include refid="BaseColumnList"></include>
