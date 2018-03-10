@@ -45,7 +45,7 @@ class Filing:
         self.date = ''
         self.reportDate = ''
         '''HRList'''
-        self.info = []  
+        self.info = HRList() 
 
     def parseFilingXMLRow(content):
         datas = re.findall(SEC_TABLE_DATA_REG, content, re.S)
@@ -67,7 +67,8 @@ class Filing:
         return int(date.replace('-', ''))
 
 
-class InfoTable:
+class HRRecord:
+    ''' Record of 13F-HR table '''
     def __init__(self):
         self.issuerName = ''
         self.titleClass = ''
@@ -81,25 +82,26 @@ class InfoTable:
         self.voteShared = 0
         self.voteNone = 0
 
-    def parseInfoTableXML(content):
-        self = InfoTable()
+    ''' Class Method '''
+    def parseHRRecordXML(content):
+        hrRecord = HRRecord()
         try:
-            self.issuerName = re.search(SEC_INFO_TABLE_ISSUER_NAME_REG, content, re.S).group(1)
-            self.titleClass = re.search(SEC_INFO_TABLE_CLASS_REG, content, re.S).group(1)
-            self.cusip = re.search(SEC_INFO_TABLE_CUSIP_REG, content, re.S).group(1)
-            self.value = int(re.search(SEC_INFO_TABLE_VALUE_REG, content, re.S).group(1))
-            self.amountSHorPRN = int(re.search(SEC_INFO_TABLE_AMOUNT_SH_PRN_REG, content, re.S).group(1))
-            self.SHorPRN = re.search(SEC_INFO_TABLE_SH_OR_PRN_REG, content, re.S).group(1)
-            #self.otherManager = re.search(SEC_INFO_TABLE_OTHER_MAG_REG, content, re.S).group(1)
-            self.investD = re.search(SEC_INFO_TABLE_INVEST_D_REG, content, re.S).group(1)
-            self.voteSole = int(re.search(SEC_INFO_TABLE_VOTE_SOLE_REG, content, re.S).group(1))
-            self.voteShared = int(re.search(SEC_INFO_TABLE_VOTE_SHARED_REG, content, re.S).group(1))
-            self.voteNone = int(re.search(SEC_INFO_TABLE_VOTE_NONE_REG, content, re.S).group(1))
+            hrRecord.issuerName = re.search(SEC_INFO_TABLE_ISSUER_NAME_REG, content, re.S).group(1)
+            hrRecord.titleClass = re.search(SEC_INFO_TABLE_CLASS_REG, content, re.S).group(1)
+            hrRecord.cusip = re.search(SEC_INFO_TABLE_CUSIP_REG, content, re.S).group(1)
+            hrRecord.value = int(re.search(SEC_INFO_TABLE_VALUE_REG, content, re.S).group(1))
+            hrRecord.amountSHorPRN = int(re.search(SEC_INFO_TABLE_AMOUNT_SH_PRN_REG, content, re.S).group(1))
+            hrRecord.SHorPRN = re.search(SEC_INFO_TABLE_SH_OR_PRN_REG, content, re.S).group(1)
+            #hrRecord.otherManager = re.search(SEC_INFO_TABLE_OTHER_MAG_REG, content, re.S).group(1)
+            hrRecord.investD = re.search(SEC_INFO_TABLE_INVEST_D_REG, content, re.S).group(1)
+            hrRecord.voteSole = int(re.search(SEC_INFO_TABLE_VOTE_SOLE_REG, content, re.S).group(1))
+            hrRecord.voteShared = int(re.search(SEC_INFO_TABLE_VOTE_SHARED_REG, content, re.S).group(1))
+            hrRecord.voteNone = int(re.search(SEC_INFO_TABLE_VOTE_NONE_REG, content, re.S).group(1))
         except AttributeError:
             print(content)
             raise
 
-        return self
+        return hrRecord
 
     def compare(self, target):
         if(self.cusip == target.cusip and self.titleClass == target.titleClass and self.investD == target.investD and self.SHorPRN == target.SHorPRN):
@@ -111,29 +113,29 @@ class InfoTable:
         return self.issuerName + ',' + self.titleClass + ',' + self.cusip + ',' + str(self.value) + ',' + str(self.amountSHorPRN) + ',' + self.SHorPRN + ',' + self.investD + ',' + str(self.voteSole) + ',' + str(self.voteShared) + ',' + str(self.voteNone)
 
 class HRList:
+    ''' List of 13F-HR records'''
     def __init__(self):
-        self.infoTableList = []
+        self.hrRecordList = []
 
     '''Class Method'''
-    def parseInfoTableListXML(content):
-        strInfoTableList = re.findall(SEC_INFO_TABLE_REG, content, re.S)
+    def parseHRListXML(content):
+        strHRRecordList = re.findall(SEC_INFO_TABLE_REG, content, re.S)
 
-        self = HRList()
-        self.infoTableList = []
+        hrList = HRList()
         
-        for strInfoTable in strInfoTableList:
-            hrInfo = InfoTable.parseInfoTableXML(strInfoTable)
-            self.infoTableList.append(hrInfo)
+        for strHRRecord in strHRRecordList:
+            hrRecord = HRRecord.parseHRRecordXML(strHRRecord)
+            hrList.hrRecordList.append(hrRecord)
 
-        return self
+        return hrList
 
     def refine(self):
         issuerCusip = ''
         issuerHrList = []
-        size = len(self.infoTableList)
+        size = len(self.hrRecordList)
         i = 0
         while(i < size):
-            item = self.infoTableList[i]
+            item = self.hrRecordList[i]
             if(item.cusip == issuerCusip):
                 for hrItem in issuerHrList:
                     if(item.compare(hrItem)):
@@ -143,7 +145,7 @@ class HRList:
                         hrItem.voteShared += item.voteShared
                         hrItem.voteNone += item.voteNone
                         '''Delete item in self'''
-                        self.infoTableList.pop(i)
+                        self.hrRecordList.pop(i)
                         i -= 1
                         size -= 1
                         break
@@ -157,7 +159,7 @@ class HRList:
 
     def toCSVString(self):
         csv = ''
-        for hrItem in self.infoTableList:
+        for hrItem in self.hrRecordList:
             csv += hrItem.toString() + '\n'
 
         return csv

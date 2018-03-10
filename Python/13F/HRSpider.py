@@ -72,7 +72,7 @@ def parseHRUrl(content):
 
     
 def parseHRTable(content):
-    return HRList.parseInfoTableListXML(content)
+    return HRList.parseHRListXML(content)
     
 def spideHRFilings(stockSymbol, filingType, startDate):
     
@@ -87,7 +87,7 @@ def spideHRFilings(stockSymbol, filingType, startDate):
     filings = parseFilingList(params)
 
     ''' Get the content of all filings '''
-    for filing in filings:
+    for filing in filings[:]:
         filingUrl = SEC_HOME_URL + filing.url
         filingContent = urllib.request.urlopen(filingUrl).read()
         filingContent = filingContent.decode(CODING_FORMAT)
@@ -102,6 +102,7 @@ def spideHRFilings(stockSymbol, filingType, startDate):
         
         hrUrl = parseHRUrl(filingContent)
         if not hrUrl:
+            filings.remove(filing)
             continue
         
         hrUrl = SEC_HOME_URL + hrUrl
@@ -110,17 +111,24 @@ def spideHRFilings(stockSymbol, filingType, startDate):
         
         filing.info = parseHRTable(hrContent)
 
+        if len(filing.info.hrRecordList) == 0:
+            filings.remove(filing)
+            continue
+        
         # Persist Holding Report
         filing.info.refine()
-        print(stockSymbol + '-' + str(filing.reportDate), len(filing.info.infoTableList))
+        print(stockSymbol + '-' + str(filing.reportDate), len(filing.info.hrRecordList))
         filing.persistInfoToDisk(outputPath)
 
     return filings
 
 def persistToDisk(stockSymbol, filings, outputPath):
+    if not os.path.exists(outputPath) and len(filings) > 0:
+        os.mkdir(outputPath)
+    
     for filing in filings:
         filing.info.refine()
-        print(stockSymbol + '-' + str(filing.reportDate), len(filing.info.infoTableList))
+        print(stockSymbol + '-' + str(filing.reportDate), len(filing.info.hrRecordList))
         filing.persistInfoToDisk(outputPath)
 
 
@@ -144,6 +152,11 @@ else:
     print('Arguments wrong!')
     sys.exit()
 
+# Check if output folder exists, if not then create folder
+if not os.path.exists(destDirectory):
+    os.mkdir(destDirectory)
+
+# get cik list for fetching filings
 stockSymbolList = []
 with open(companyFile, 'r') as cf:
     for line in cf.readlines():
@@ -169,10 +182,10 @@ for stockSymbol in stockSymbolList:
             lastFile = max(files)
             startDate = int(re.search('(\d+)\.hr', lastFile[len(stockSymbol) + len(HR_FILE_SEP):]).group(1))
     else:
-        os.mkdir(outputPath)
         startDate = 0
 
     print(stockSymbol, startDate, end = ' | ')
     filings = spideHRFilings(stockSymbol, filingType, startDate)
+    # Persist all filings of this company
     #persistToDisk(stockSymbol, filings, outputPath)
 
