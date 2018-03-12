@@ -80,6 +80,9 @@ public class OptionTradeServiceImpl implements OptionTradeService {
 	public int insertByMap(Map<String, List<OptionTradeModel>> tradeMap) {
 		int persistCount = 0;
 		
+		if(tradeMap.keySet().size() == 0) {
+			return 0;
+		} 
 		// create table if table is not exists
 		Integer eventDay = tradeMap.get(tradeMap.keySet().toArray()[0]).get(0).getEventDay();
 		String tableName = tradeTablePrefix + CommonUtil.getQuarterByDay(eventDay);

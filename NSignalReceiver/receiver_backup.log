@@ -54,3 +54,19 @@
 2018-02-07 11:10:45 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(33) -Start to load records from file H:\Finance\OptionData\NSignalData\20160811.DO.nxc.trade...
 2018-02-07 11:12:52 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(41) -Load records success. Count of records: 1766248
 2018-02-07 11:22:11 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(47) -Persist records success - Date of 160811. Count of records: 804346
+2018-02-08 11:20:11 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(53) -Property server.port : 8080
+2018-02-08 11:20:11 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(54) -Property db.driverClassName : org.postgresql.Driver
+2018-02-08 11:20:11 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(55) -Property db.url : jdbc:postgresql://localhost:5432/aolang
+2018-02-08 11:20:11 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(33) -Start to load records from file H:\Finance\OptionData\NSignalData\20161001.DO.nxc.trade...
+2018-02-08 11:20:14 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(41) -Load records success. Count of records: 572140
+2018-02-08 11:30:42 [ INFO] - com.aolangtech.nsignal.utils.OptionTradeHandlerContext -OptionTradeHandlerContext.java(142) -Persist OI records success - Date of 161001. Count: 365742
+2018-02-08 11:31:00 [ INFO] - com.aolangtech.nsignal.utils.OptionTradeHandlerContext -OptionTradeHandlerContext.java(144) -Persist trade records success - Date of 161001. Count: 0
+2018-02-08 11:40:07 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(53) -Property server.port : 8080
+2018-02-08 11:40:07 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(54) -Property db.driverClassName : org.postgresql.Driver
+2018-02-08 11:40:07 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(55) -Property db.url : jdbc:postgresql://localhost:5432/aolang
+2018-02-08 11:40:08 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(33) -Start to load records from file H:\Finance\OptionData\NSignalData\20161001.DO.nxc.trade...
+2018-02-08 11:40:31 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(53) -Property server.port : 8080
+2018-02-08 11:40:31 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(54) -Property db.driverClassName : org.postgresql.Driver
+2018-02-08 11:40:31 [ INFO] - com.aolangtech.nsignal.NsignalConfig -NsignalConfig.java(55) -Property db.url : jdbc:postgresql://localhost:5432/aolang
+2018-02-08 11:40:31 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(33) -Start to load records from file H:\Finance\OptionData\NSignalData\20161002.DO.nxc.trade...
+2018-02-08 11:40:35 [ INFO] - com.aolangtech.nsignal.receiver.impl.NSignalFileReceiver -NSignalFileReceiver.java(41) -Load records success. Count of records: 572140

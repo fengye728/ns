@@ -54,7 +54,7 @@
   		big_trade
   </sql>
   
-    <update id="createTable">
+  <update id="createTable">
   	CREATE TABLE IF NOT EXISTS ${tableName}
   	(
   	    id bigserial PRIMARY KEY,

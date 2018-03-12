@@ -4,6 +4,7 @@ Debug/
 *.opendb
 .vs/
 x64/
+*.log
 Release/
 
 .gradle

@@ -1,10 +1,8 @@
 package com.aolangtech.nsignal.utils;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,13 +102,8 @@ public class OptionTradeHandlerContext{
 			return false;
 		}
 		
-		Date eventDay = CommonUtil.nDate2dDate(record.getEventDay());
-		
-		Calendar date = Calendar.getInstance();
-		date.setTime(eventDay);
-		date.set(Calendar.DATE, date.get(Calendar.DATE) - 1);
-		
-		record.setEventDay(CommonUtil.dDate2nDate(date.getTime()));
+		// set oi's event day to yesterday
+		record.setEventDay(CommonUtil.changeNDate(record.getEventDay(), -1));
 		
 		// insert or update oi
 		if (oiMap.containsKey(recordOSymbol)) {
@@ -127,9 +120,12 @@ public class OptionTradeHandlerContext{
 	 * @return
 	 */
 	public int getOptionTradeDate() {
-		Collection<List<OptionTradeModel>> values = tradeMap.values();
-		if(!values.isEmpty())
-			return values.iterator().next().get(0).getEventDay();
+		Collection<OptionOIModel> values = oiMap.values();
+		if(!values.isEmpty()){
+			// oi's event day is yesterday, so need to plus 1
+			int eventDay = values.iterator().next().getEventDay();
+			return CommonUtil.changeNDate(eventDay, 1);
+		}
 		else
 			return 0;
 	}

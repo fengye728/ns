@@ -1,6 +1,7 @@
 package com.aolangtech.nsignal.utils;
 
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 
 import com.aolangtech.nsignal.constants.CommonConstants;
@@ -108,6 +109,39 @@ public class CommonUtil {
 	 */
 	public static Integer dDate2nDate(Date dDate) {
 		return Integer.valueOf(CommonConstants.DAY_DATE_FORMATTER.format(dDate));
+	}
+	
+	/**
+	 * Change date with offset.
+	 * 
+	 * @param nDate integer date (yyMMdd)
+	 * @param offset
+	 * @return resulted integer date (yyMMdd)
+	 */
+	public static Integer changeNDate(Integer nDate, int offset) {
+		Date eventDay = CommonUtil.nDate2dDate(nDate);
+		
+		Calendar date = Calendar.getInstance();
+		date.setTime(eventDay);
+		date.set(Calendar.DATE, date.get(Calendar.DATE) + offset);
+		
+		return CommonUtil.dDate2nDate(date.getTime());
+	}
+
+	/**
+	 * Change date with offset.
+	 * 
+	 * @param dDate date whose type is date
+	 * @param offset
+	 * @return resulted date whose type is date
+	 */
+	public static Date changeDDate(Date dDate, int offset) {
+		
+		Calendar date = Calendar.getInstance();
+		date.setTime(dDate);
+		date.set(Calendar.DATE, date.get(Calendar.DATE) + offset);
+		
+		return date.getTime();
 	}
 	
 	/**
