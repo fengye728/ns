@@ -1,17 +1,51 @@
 # -*- encoding:UTF-8 -*-
-import urllib.request
-import re
-import os
-import sys
-from SECUtil import *
 
 '''
 	Usage: 
 		HRSpider companyFile output_path
 '''
+import urllib.request
+import contextlib
+import socket
+
+import re
+import os
+import sys
+import time
+
+from SECUtil import *
+
+import random
+
+''' Constants '''
 CODING_FORMAT = 'UTF-8'
 
+REQUEST_WAIT_TIME = 5 # unit: second
+
+
+# Global Configuration
+
+socket.setdefaulttimeout(30)    # 设置socket层超时时间为30s
+
+
 ''' Functions Definition'''
+
+def safeUrlOpen(url):
+    retry_time = 3
+    content = ''
+    
+    for i in range(retry_time):
+        try:
+            with contextlib.closing(urllib.request.urlopen(url)) as response:
+                content = response.read()
+                
+            break
+        except BaseException as e:
+            print('Error in safeUrlOpen',e)
+            time.sleep(REQUEST_WAIT_TIME)
+
+    return content
+        
 
 def parseSECTableRow(rowStr):
     return Filing.parseFilingXMLRow(rowStr)
@@ -40,7 +74,7 @@ def parseFilingList(params):
     while True:
         fullUrl = SEC_SEARCH_URL + urllib.parse.urlencode(params)
         
-        content = urllib.request.urlopen(fullUrl).read()
+        content = safeUrlOpen(fullUrl)
         content = content.decode(CODING_FORMAT)
         
         if not companyName:
@@ -88,37 +122,45 @@ def spideHRFilings(stockSymbol, filingType, startDate):
 
     ''' Get the content of all filings '''
     for filing in filings[:]:
-        filingUrl = SEC_HOME_URL + filing.url
-        filingContent = urllib.request.urlopen(filingUrl).read()
-        filingContent = filingContent.decode(CODING_FORMAT)
+        try:
+            filingUrl = SEC_HOME_URL + filing.url
+            filingContent = safeUrlOpen(filingUrl)
+            filingContent = filingContent.decode(CODING_FORMAT)
 
-        filing.stockSymbol = stockSymbol
-        filing.reportDate = re.search(SEC_FILING_REPORT_DATE_REG, filingContent, re.S).group(1)
-        filing.reportDate = Filing.convertDate2Num(filing.reportDate)
+            filing.stockSymbol = stockSymbol
+            filing.reportDate = re.search(SEC_FILING_REPORT_DATE_REG, filingContent, re.S).group(1)
+            filing.reportDate = Filing.convertDate2Num(filing.reportDate)
 
-        if(filing.reportDate <= startDate):
-            filings = filings[:filings.index(filing)]
-            break
-        
-        hrUrl = parseHRUrl(filingContent)
-        if not hrUrl:
+            if(filing.reportDate <= startDate):
+                filings = filings[:filings.index(filing)]
+                break
+            
+            hrUrl = parseHRUrl(filingContent)
+            if not hrUrl:
+                filings.remove(filing)
+                continue
+            
+            hrUrl = SEC_HOME_URL + hrUrl
+            hrContent = safeUrlOpen(hrUrl)
+            hrContent = hrContent.decode(CODING_FORMAT)
+            
+            filing.info = parseHRTable(hrContent)
+
+            if len(filing.info.hrRecordList) == 0:
+                filings.remove(filing)
+                continue
+            
+            # Persist Holding Report
+            if not os.path.exists(outputPath):
+                os.mkdir(outputPath)
+                
+            filing.info.refine()
+            print(stockSymbol + '-' + str(filing.reportDate), len(filing.info.hrRecordList))
+            filing.persistInfoToDisk(outputPath)
+        except BaseException as e:
+            print(e.reason)
+            print('--------- Error happened in', stockSymbol, filing.reportDate)
             filings.remove(filing)
-            continue
-        
-        hrUrl = SEC_HOME_URL + hrUrl
-        hrContent = urllib.request.urlopen(hrUrl).read()
-        hrContent = hrContent.decode(CODING_FORMAT)
-        
-        filing.info = parseHRTable(hrContent)
-
-        if len(filing.info.hrRecordList) == 0:
-            filings.remove(filing)
-            continue
-        
-        # Persist Holding Report
-        filing.info.refine()
-        print(stockSymbol + '-' + str(filing.reportDate), len(filing.info.hrRecordList))
-        filing.persistInfoToDisk(outputPath)
 
     return filings
 
@@ -168,6 +210,9 @@ with open(companyFile, 'r') as cf:
         if(line != ''):
             stockSymbolList.append(line)
 
+
+# 随机打乱 cik list
+random.shuffle(stockSymbolList)
 
 for stockSymbol in stockSymbolList:
     

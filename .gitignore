@@ -6,6 +6,7 @@ Debug/
 x64/
 *.log
 Release/
+*.hr
 
 .gradle
 /build/

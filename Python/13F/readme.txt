@@ -14,10 +14,17 @@ CREATE TABLE fund
 	symbol text
 );
 
-3.Remark
+4. Hodling Report:
+	SER FORM: 13F-HR
+
+5. Senior management holding report:
+	SEC FORM: 4
+	
+	
+6.Remark
 	Quarter fetching cik data is most recent quarter.
 	
-4.Other links
+7.Other links
 	https://www.sec.gov/dera/data/financial-statement-data-sets.html
 	ftp://ftp.nasdaqtrader.com
 	https://www.sec.gov/edgar/searchedgar/accessing-edgar-data.htm
