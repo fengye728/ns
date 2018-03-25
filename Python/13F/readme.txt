@@ -11,7 +11,30 @@ CREATE TABLE fund
 	id bigserial PRIMARY KEY,
 	cik bigint NOT NULL UNIQUE,
 	name text NOT NULL,
-	symbol text
+	symbol text DEFAULT NULL,
+	cusip text DEFAULT NULL
+);
+
+CREATE TABLE holding_report
+(
+	id bigserial PRIMARY KEY,
+	fund_id bigint REFERENCES fund(id) NOT NULL,
+	cusip text NOT NULL,
+	amt_shares integer,
+	quarter integer NOT NULL,			-- yyyyQ
+	
+	CONSTRAINT hr_unique UNIQUE(fund_id, quarter, cusip)
+);
+
+CREATE TABLE earning
+(
+	id bigserial PRIMARY KEY,
+	symbol text NOT NULL,
+	quarter integer NOT NULL,			-- yyyyQ
+	earning_date integer DEFAULT NULL,
+	earning_ab char(1) DEFAULT NULL,	-- A: after market close; B: before market open
+	
+	CONSTRAINT earning_unique UNIQUE(symbol, quarter)
 );
 
 4. Hodling Report:
