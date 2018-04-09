@@ -73,9 +73,6 @@ public class OptionTradeHandlerContext{
 		// inferring trade direction by bid-ask
 		TradeDirectInferUtil.bidAskTest(record);
 		
-		// inferring trade direction by tick test
-		TradeDirectInferUtil.tickTest(findLastTrade(record), record);
-		
 		// just for agreeing with database field
 		record.formDirection();
 		
@@ -215,28 +212,6 @@ public class OptionTradeHandlerContext{
 	 */
 	private void setBigTradeFlag() {
 		// TODO set big trade flag
-	}
-	
-	/**
-	 * Get last option trade record. 
-	 * 
-	 * @param record
-	 * @return the last option trade record if existed, otherwise null.
-	 */
-	private OptionTradeModel findLastTrade(OptionTradeModel record) {
-		List<OptionTradeModel> tradeList = tradeMap.get(record.getStockSymbol());
-		
-		if(null != tradeList) {
-			OptionTradeModel tmp;
-			for(int i = tradeList.size() - 1; i >= 0; --i) {
-				tmp = tradeList.get(i);
-				if(tmp.getExpiration() == record.getExpiration() && tmp.getCallPut() == record.getCallPut()) {
-					return tmp;
-				}
-			}
-		}
-		
-		return null;
 	}
 	
 	/**

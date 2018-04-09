@@ -1,7 +1,6 @@
 package com.aolangtech.nsignal.models;
 
 import com.aolangtech.nsignal.constants.CommonConstants;
-import com.aolangtech.nsignal.constants.CommonConstants.TickTestTradeCategory;
 import com.aolangtech.nsignal.utils.CommonUtil;
 
 public class OptionTradeModel {
@@ -49,10 +48,7 @@ public class OptionTradeModel {
 	private Long legSequenceId;		// The sequenceId of the other leg
 	
 	private Boolean bigTrade;
-	
-	// Extra properties
-	private TickTestTradeCategory tickTestTD;		// The trade direction inferred by method tick test
-	
+
 	private int bidAskTD;			// The trade direction inferred by method ask-bid quote based.	-100 ~ 0: Sell; 0 ~ 100: Buy.
 	
 	/**
@@ -94,20 +90,8 @@ public class OptionTradeModel {
 			this.direction = BUY + this.bidAskTD + UNIT;
 			
 		} else {
-			// bid-ask is invalid, then use tick test
-			
-			switch(this.tickTestTD) {
-			case UPTICK:
-			case ZERO_UPTICK:
-				this.direction = BUY + "0" + UNIT;
-				break;
-			case DOWNTICK:
-			case ZERO_DOWNTICK:
-				this.direction = SELL + "0" + UNIT;
-				break;
-			case UNKNOWN:
-				this.direction = UNKNOWN + "0" + UNIT;
-			}
+			// bid-ask is invalid, then unknown
+			this.direction = UNKNOWN + "0" + UNIT;
 		}
 	}
 	
@@ -184,7 +168,7 @@ public class OptionTradeModel {
 	}
 
 	public void setExpiration(Integer expiration) {
-		this.expiration = expiration;
+		this.expiration = CommonUtil.safeNDate(expiration);
 	}
 
 	public Character getCallPut() {
@@ -323,14 +307,6 @@ public class OptionTradeModel {
 		this.bigTrade = bigTrade;
 	}
 
-	public TickTestTradeCategory getTickTestTD() {
-		return tickTestTD;
-	}
-
-	public void setTickTestTD(TickTestTradeCategory tickTestTD) {
-		this.tickTestTD = tickTestTD;
-	}
-
 	public int getBidAskTD() {
 		return bidAskTD;
 	}
@@ -344,7 +320,7 @@ public class OptionTradeModel {
 	}
 
 	public void setEventDay(Integer eventDay) {
-		this.eventDay = eventDay;
+		this.eventDay = CommonUtil.safeNDate(eventDay);
 	}
 
 	public Integer getCondition() {

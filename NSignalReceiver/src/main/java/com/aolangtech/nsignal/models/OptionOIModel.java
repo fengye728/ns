@@ -30,7 +30,7 @@ public class OptionOIModel {
 	}
 
 	public void setEventDay(Integer eventDay) {
-		this.eventDay = eventDay;
+		this.eventDay = CommonUtil.safeNDate(eventDay);
 	}
 
 	public Integer getExpiration() {
@@ -38,7 +38,7 @@ public class OptionOIModel {
 	}
 
 	public void setExpiration(Integer expiration) {
-		this.expiration = expiration;
+		this.expiration = CommonUtil.safeNDate(expiration);
 	}
 
 	public Character getCallPut() {

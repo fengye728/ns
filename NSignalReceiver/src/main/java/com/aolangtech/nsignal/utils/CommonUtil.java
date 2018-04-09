@@ -156,6 +156,14 @@ public class CommonUtil {
 		return String.valueOf(year) + String.valueOf(quarterInYear);
 	}
 	
+	/**
+	 * Guarantee the nDate is the format of yyyyMMdd.
+	 * @param nDate
+	 * @return
+	 */
+	public static Integer safeNDate(Integer nDate) {
+		return nDate % 1000000;
+	}
 	
 	public static int getDigit(char ch){
 		return ch - '0';
