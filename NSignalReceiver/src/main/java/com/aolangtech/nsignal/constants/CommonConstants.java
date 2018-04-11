@@ -1,12 +1,8 @@
 package com.aolangtech.nsignal.constants;
 
-import java.text.SimpleDateFormat;
-
 public class CommonConstants {
 	// --------------------- Date format ---------------------
 	public final static String DAY_DATE_FORMAT = "yyMMdd";
-	
-	public final static SimpleDateFormat DAY_DATE_FORMATTER = new SimpleDateFormat(CommonConstants.DAY_DATE_FORMAT);
 	
 	// --------------------- Record Type ----------------------
 	public final static int RECORD_TYPE_TRADE = 1;
