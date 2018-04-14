@@ -94,7 +94,7 @@ public class CommonUtil {
 	 * @return
 	 */
 	public static Date nDate2dDate(Integer nDate) {
-		final SimpleDateFormat DAY_DATE_FORMATTER = new SimpleDateFormat(CommonConstants.DAY_DATE_FORMAT);
+		SimpleDateFormat DAY_DATE_FORMATTER = new SimpleDateFormat(CommonConstants.DAY_DATE_FORMAT);
 		try {
 			return DAY_DATE_FORMATTER.parse("" + nDate);
 		} catch (ParseException e) {
@@ -109,7 +109,7 @@ public class CommonUtil {
 	 * @return
 	 */
 	public static Integer dDate2nDate(Date dDate) {
-		final SimpleDateFormat DAY_DATE_FORMATTER = new SimpleDateFormat(CommonConstants.DAY_DATE_FORMAT);
+		SimpleDateFormat DAY_DATE_FORMATTER = new SimpleDateFormat(CommonConstants.DAY_DATE_FORMAT);
 		return Integer.valueOf(DAY_DATE_FORMATTER.format(dDate));
 	}
 	

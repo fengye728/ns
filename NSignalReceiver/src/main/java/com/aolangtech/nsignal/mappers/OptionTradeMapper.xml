@@ -79,7 +79,10 @@
 	    direction character(9) DEFAULT NULL,
 	    leg_sequence_id integer,
 	    big_trade boolean
-  	)
+  	);
+  	CREATE INDEX ${tableName}_symbol_index ON ${tableName}(stock_symbol); 
+	CREATE INDEX ${tableName}_event_day_index ON ${tableName}(event_day); 
+	CREATE INDEX ${tableName}_strike_index ON ${tableName}(strike); 
   </update>
   
   <select id="selectByPrimaryKey" resultMap="BaseResultMap">

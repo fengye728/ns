@@ -8,6 +8,7 @@ public interface OptionOIService {
 	
 	/**
 	 * Insert a list of OptionOIModels whose event date is same with each other into database.
+	 * 		Remark: delete same event_day records before inserting.
 	 * @param list
 	 * @return
 	 */

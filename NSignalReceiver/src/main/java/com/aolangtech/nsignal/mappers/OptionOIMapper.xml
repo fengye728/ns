@@ -37,7 +37,9 @@
 	  "open_interest" integer DEFAULT NULL,
 	  
 	  CONSTRAINT ${tableName}_unique UNIQUE(event_day, stock_symbol, expiration, call_put, strike)
-	 )
+	 );
+	CREATE INDEX ${tableName}_symbol_index ON ${tableName}(stock_symbol); 
+	CREATE INDEX ${tableName}_event_day_index ON ${tableName}(event_day); 
   </update>
   
   

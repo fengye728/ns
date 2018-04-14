@@ -16,6 +16,7 @@ public interface OptionTradeService {
 	
 	/**
 	 * Insert a list of OptionTradeModels whose event date is same with each other into database.
+	 * 		Remark: delete same event_day records before inserting.
 	 * @param list
 	 * @return
 	 */
@@ -23,6 +24,7 @@ public interface OptionTradeService {
 	
 	/**
 	 * Insert OptionTradeModels which in a map <symbol, a list of it>
+	 * 		Remark: delete same event_day records before inserting.
 	 * @param tradeMap
 	 * @return
 	 */
