@@ -99,9 +99,6 @@ public class OptionTradeHandlerContext{
 			return false;
 		}
 		
-		// set oi's event day to yesterday
-		record.setEventDay(CommonUtil.changeNDate(record.getEventDay(), -1));
-		
 		// insert or update oi
 		if (oiMap.containsKey(recordOSymbol)) {
 			oiMap.get(recordOSymbol).setOpenInterest(record.getOpenInterest());
@@ -117,11 +114,25 @@ public class OptionTradeHandlerContext{
 	 * @return
 	 */
 	public int getOptionTradeDate() {
+		Collection<List<OptionTradeModel>> values = tradeMap.values();
+		if(!values.isEmpty()){
+			int eventDay = values.iterator().next().get(0).getEventDay();
+			return eventDay;
+		}
+		else
+			return 0;
+	}
+	
+	/**
+	 * Get the date of the open interest .
+	 * @return
+	 */
+	public int getOpenInterestDate() {
 		Collection<OptionOIModel> values = oiMap.values();
 		if(!values.isEmpty()){
 			// oi's event day is yesterday, so need to plus 1
 			int eventDay = values.iterator().next().getEventDay();
-			return CommonUtil.changeNDate(eventDay, 1);
+			return eventDay;
 		}
 		else
 			return 0;
@@ -134,11 +145,10 @@ public class OptionTradeHandlerContext{
 	 * @return The number of records persisted.
 	 */
 	public int persist() {
-		int tradeDate = this.getOptionTradeDate();
 		int oiRecordCount = optionOIService.insertList(new ArrayList<OptionOIModel>(oiMap.values()));
-		logger.info("Persist OI records success - Date of "+ tradeDate + ". Count: " + oiRecordCount);
+		logger.info("Persist OI records success - Date of "+ getOpenInterestDate() + ". Count: " + oiRecordCount);
 		int tradeRecordCount = optionTradeService.insertByMap(tradeMap);
-		logger.info("Persist trade records success - Date of "+ tradeDate + ". Count: " + tradeRecordCount);
+		logger.info("Persist trade records success - Date of "+ getOptionTradeDate() + ". Count: " + tradeRecordCount);
 		return oiRecordCount + tradeRecordCount;
 	}
 	

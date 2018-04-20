@@ -110,8 +110,7 @@ public class NsignalRemoteReceiver implements NSignalReceiver {
 	    	logger.info("Load records from " + remoteAddress + " -Count: " + readCount);
 	    	handler.processForMap();
 	    	// persist all records
-	    	int count = handler.persist();
-	    	logger.info("Persist all " + handler.getOptionTradeDate() + " records from " + remoteAddress + " -Count: " + count);
+	    	handler.persist();
 	    }
 		
 	}

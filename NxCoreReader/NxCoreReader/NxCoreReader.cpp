@@ -66,7 +66,7 @@ void NxCoreTradeReader::ProcessTradeMsg(const NxCoreSystem* pNxCoreSys, const Nx
 {
 	const NxCoreTrade&	nt = pNxCoreMessage->coreData.Trade;
 	const NxCoreHeader& ch = pNxCoreMessage->coreHeader;
-	const NxDate&		date = pNxCoreSys->nxDate;
+	const NxDate&		date = pNxCoreMessage->coreHeader.nxSessionDate;
 	const NxTime&       t = pNxCoreSys->nxTime;
 
 	std::string symbol = this->getSymbol(pNxCoreMessage);
@@ -79,6 +79,8 @@ void NxCoreTradeReader::ProcessTradeMsg(const NxCoreSystem* pNxCoreSys, const Nx
 	auto optInfo = findOrCreateOptionInfo(symbol);
 
 	TradeHint hint = optInfo->GetTradeHint(t.MsOfDay);
+
+	//printf("%d %d %d", pNxCoreMessage->coreHeader.nxSessionDate.Year, pNxCoreMessage->coreHeader.nxSessionDate.Month, pNxCoreMessage->coreHeader.nxSessionDate.Day);
 
 	char lineBuffer[200];
 	// format trade item 
@@ -177,7 +179,7 @@ void NxCoreTradeReader::ProcessQuoteMsg(const NxCoreSystem* pNxCoreSys, const Nx
 */
 void NxCoreTradeReader::ProcessCategoryMsg(const NxCoreSystem* pNxCoreSys, const NxCoreMessage* pNxCoreMessage) 
 {
-	const NxDate&	date = pNxCoreSys->nxDate;
+	const NxDate&	date = pNxCoreMessage->coreHeader.nxSessionDate;
 	const auto&		category = pNxCoreMessage->coreData.Category;
 	std::string symbol = this->getSymbol(pNxCoreMessage);
 	if (symbol.at(0) != 'o')
@@ -190,9 +192,9 @@ void NxCoreTradeReader::ProcessCategoryMsg(const NxCoreSystem* pNxCoreSys, const
 	case 67:
 		if (category.pnxFields[0].Set == 1)
 		{
+			//printf("%d %d %d", pNxCoreMessage->coreHeader.nxSessionDate.Year, pNxCoreMessage->coreHeader.nxSessionDate.Month, pNxCoreMessage->coreHeader.nxSessionDate.Day);
 			// Open Interest
 			int oi = category.pnxFields[0].data.i32Bit;
-
 			char lineBuffer[100];
 			// format trade item 
 			sprintf_s(lineBuffer, sizeof(lineBuffer),
