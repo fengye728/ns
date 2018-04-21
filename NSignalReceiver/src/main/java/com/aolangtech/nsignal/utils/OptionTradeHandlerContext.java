@@ -124,29 +124,13 @@ public class OptionTradeHandlerContext{
 	}
 	
 	/**
-	 * Get the date of the open interest .
-	 * @return
-	 */
-	public int getOpenInterestDate() {
-		Collection<OptionOIModel> values = oiMap.values();
-		if(!values.isEmpty()){
-			// oi's event day is yesterday, so need to plus 1
-			int eventDay = values.iterator().next().getEventDay();
-			return eventDay;
-		}
-		else
-			return 0;
-	}
-	
-
-	/**
 	 * Persist all records in map into database.
 	 * 
 	 * @return The number of records persisted.
 	 */
 	public int persist() {
 		int oiRecordCount = optionOIService.insertList(new ArrayList<OptionOIModel>(oiMap.values()));
-		logger.info("Persist OI records success - Date of "+ getOpenInterestDate() + ". Count: " + oiRecordCount);
+		logger.info("Persist OI records success - Date of "+ OptionOIServiceImpl.getExpectedOIEventDay(oiMap.values()) + ". Count: " + oiRecordCount);
 		int tradeRecordCount = optionTradeService.insertByMap(tradeMap);
 		logger.info("Persist trade records success - Date of "+ getOptionTradeDate() + ". Count: " + tradeRecordCount);
 		return oiRecordCount + tradeRecordCount;

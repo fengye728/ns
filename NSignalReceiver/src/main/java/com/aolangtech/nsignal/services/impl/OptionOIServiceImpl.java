@@ -1,6 +1,9 @@
 package com.aolangtech.nsignal.services.impl;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.ibatis.session.SqlSession;
 
@@ -37,6 +40,25 @@ public class OptionOIServiceImpl implements OptionOIService {
 	}
 	
 	/**
+	 * Get expected oi event_day
+	 * 
+	 * @param collection
+	 * @return
+	 */
+	public static int getExpectedOIEventDay(Collection<OptionOIModel> collection) {
+		int maxEventDay = 0;
+		Map<Integer, Long> collect = collection.stream().collect(Collectors.groupingBy(OptionOIModel::getEventDay, Collectors.counting()));
+		Long maxCount = 0L;
+		for(Integer eventDay : collect.keySet()) {
+			if(collect.get(eventDay) > maxCount) {
+				maxEventDay = eventDay;
+				maxCount = collect.get(eventDay);
+			}
+		}
+		return maxEventDay;
+	}
+	
+	/**
 	 * Insert a list of oi of one day records into database. Create table if it not exists
 	 */
 	@Override
@@ -46,14 +68,17 @@ public class OptionOIServiceImpl implements OptionOIService {
 			return 0;
 		}
 		else {
+			// filter oi records
+			final int targetEventDay = getExpectedOIEventDay(list);
+			list = list.stream().filter( oiModel -> oiModel.getEventDay() >= targetEventDay).collect(Collectors.toList());
+
 			// create table if not exists
 			OptionOIMapper mapper = this.openMapper();
-			String quarter = CommonUtil.getQuarterByDay(list.get(0).getEventDay());
-			String tableName = oiTablePrefix + quarter;
+			String tableName = oiTablePrefix + CommonUtil.getQuarterByDay(targetEventDay);
 			mapper.createTable(tableName);
 			
 			// clear old records of specified day
-			mapper.deleteByEventDay(tableName, list.get(0).getEventDay());
+			mapper.deleteByEventDay(tableName, targetEventDay);
 			this.closeMapper();
 			
 			// insert records
@@ -63,6 +88,7 @@ public class OptionOIServiceImpl implements OptionOIService {
 			
 			for(count = 0; count < list.size(); count++) {
 				try{
+					
 					mapper.insert(tableName, list.get(count));
 					session.commit();
 				} catch (Exception ex) {
