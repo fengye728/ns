@@ -189,6 +189,7 @@ def execute_sql(cursor, sql):
         return []
 
 def to_quarter(ym):
+'''ym: yyMM'''
     ym = int(ym)
     y = int(ym / 100)
     m = int(ym % 100)
