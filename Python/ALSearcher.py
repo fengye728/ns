@@ -5,7 +5,7 @@ import os
 
 # ---------- Get connection ----------------
 print('Connecting server...')
-conn = psycopg2.connect(database = 'aolang', user = 'postgres', password = 'AL', host = '54.210.133.145', port = '6432')
+conn = psycopg2.connect(database = 'aolang', user = 'postgres', password = 'AL', host = '52.205.81.17', port = '5432')
 cur = conn.cursor()
 print('Connecting server success!')
 
@@ -44,6 +44,14 @@ WHERE stock_symbol = '{1}' \
     AND call_put = '{5}' \
 GROUP BY stock_symbol, call_put, strike, expiration, direc \
 ORDER BY millD DESC \
+"
+
+SEQUENCE_SEARCH_SQL = " \
+SELECT stock_symbol, event_day, event_time / 1000 as event_time, call_put, expiration, strike, size, price, direction, condition, sequence_id, leg_sequence_id \
+FROM option_trade_{0} \
+WHERE stock_symbol = '{1}' \
+    AND event_day = {2} \
+    AND sequence_id = {3} \
 "
 
 # ------------------- Search Functions --------------------
@@ -99,6 +107,48 @@ def option_milld(symbol, event_day, expiration, strike, call_put, path = '.'):
     
     #print(symbol, 'option_milld search success')
 
+def _sequence_search(symbol, event_day, sequence_id):
+
+    quarter = to_quarter(event_day)
+    
+    sql = SEQUENCE_SEARCH_SQL.format(quarter, symbol, event_day, sequence_id)
+    cur.execute(sql)
+    return pd.DataFrame(data = cur.fetchall(), columns = OPTION_NORMAL_COLUMNS)
+
+def spread_search(symbol, event_day, sequence_id, path = "."):
+    FILENAME_PATTERN = 'sequence_{0}_{1}_{2}.csv'
+    filename = os.path.join(path, FILENAME_PATTERN.format(symbol, event_day, sequence_id))
+
+    result = None
+    sequence_set = set()
+    sequence_set.add(sequence_id)
+    
+    leg_sequence_ids = set()
+    leg_sequence_ids.add(sequence_id)
+    while True:
+        new_leg_ids = []
+
+        for leg_id in leg_sequence_ids:
+            tmp = _sequence_search(symbol, event_day, leg_id)
+            if result is None:
+                result = tmp
+            else:
+                result = result.append(tmp)
+            new_leg_ids.extend( list(tmp.leg_sequence_id) )
+
+        new_leg_ids = set(new_leg_ids).difference(sequence_set)
+        if len(new_leg_ids) == 0:
+            break
+        else:
+            sequence_set = sequence_set.union(new_leg_ids)
+            leg_sequence_ids = new_leg_ids
+
+    result = result[result.sequence_id.isin(sequence_set)].drop_duplicates()
+ 
+    result.to_csv(filename)
+    print(symbol, 'spread search success')
+    
+    
 def batch_search(symbol, event_day, expiration, strike, call_put):
     PATH_PATTERN = '{0}_{1}_{2}_{3}{4}'
     path = PATH_PATTERN.format(symbol, event_day, expiration, strike, call_put)
@@ -106,12 +156,14 @@ def batch_search(symbol, event_day, expiration, strike, call_put):
     if not os.path.exists(path):
         os.mkdir(path)
         option_normal(symbol, event_day, expiration, strike, call_put, path)
-        quarter_oi(symbol, event_day, expiration, strike, call_put, path)
+        
+        #quarter_oi(symbol, event_day, expiration, strike, call_put, path)
+        
         option_milld(symbol, event_day, expiration, strike, call_put, path)
         print(path, 'search success!')
     else:
         print(path, 'already exists')
 
 # search
-
-batch_search('BIIB', 180424, 190118, 370, 'P')
+# stock, event_day, expiration, strike, call_put
+batch_search('VALE', 180516, 200117, 15, 'P')
