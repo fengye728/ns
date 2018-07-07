@@ -5,7 +5,6 @@
 #include<time.h>
 #include<string>
 
-
 using namespace std;
 
 const static char* PROPERTY_FILE_NAME = "nsignal.properties";
@@ -18,10 +17,12 @@ NxCoreOutputStream* pFs = NULL;
 
 NxCoreTradeReader* reader = NULL;
 
+bool is_trade_finish = false;
+bool is_oi_finish = false;
+
 /*
 Callback for NxCore for trade
 */
-
 int __stdcall nxCoreCallbackForTrade(const NxCoreSystem* pNxCoreSys, const NxCoreMessage* pNxCoreMessage)
 {
 	const NxCoreTrade&	nt = pNxCoreMessage->coreData.Trade;
@@ -44,6 +45,21 @@ int __stdcall nxCoreCallbackForTrade(const NxCoreSystem* pNxCoreSys, const NxCor
 	}
 #endif
 
+	// End time process
+	if (t.MsOfDay >= TIME_OI_END_MS && !is_oi_finish)
+	{
+		char lineBuffer[20];
+		sprintf_s(lineBuffer, sizeof(lineBuffer), "%d,OI_FINISH\n", RECORD_TYPE_OI_FINISH);
+		pFs->Write(lineBuffer);
+		is_oi_finish = true;
+	}
+	else if(t.MsOfDay >= TIME_TRADE_END_MS && !is_trade_finish){
+		char lineBuffer[20];
+		sprintf_s(lineBuffer, sizeof(lineBuffer), "%d,TRADE_FINISH\n", RECORD_TYPE_TRADE_FINISH);
+
+		pFs->Write(lineBuffer);
+		is_trade_finish = true;
+	}
 
 	switch (pNxCoreMessage->MessageType)
 	{

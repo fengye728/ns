@@ -179,7 +179,8 @@ void NxCoreTradeReader::ProcessQuoteMsg(const NxCoreSystem* pNxCoreSys, const Nx
 */
 void NxCoreTradeReader::ProcessCategoryMsg(const NxCoreSystem* pNxCoreSys, const NxCoreMessage* pNxCoreMessage) 
 {
-	const NxDate&	date = pNxCoreMessage->coreHeader.nxSessionDate;
+	const NxDate&	cur_date = pNxCoreSys->nxDate;
+	const NxDate&	oi_date = pNxCoreMessage->coreHeader.nxSessionDate;
 	const auto&		category = pNxCoreMessage->coreData.Category;
 	std::string symbol = this->getSymbol(pNxCoreMessage);
 	if (symbol.at(0) != 'o')
@@ -190,9 +191,13 @@ void NxCoreTradeReader::ProcessCategoryMsg(const NxCoreSystem* pNxCoreSys, const
 	switch (category.pnxStringCategory->Atom)
 	{
 	case 67:
+		// filter open interest
+		if (oi_date.NDays < cur_date.NDays - OPTION_MAX_TRADE_GAP || oi_date.NDays >= cur_date.NDays)
+		{
+			break;
+		}
 		if (category.pnxFields[0].Set == 1)
 		{
-			//printf("%d %d %d", pNxCoreMessage->coreHeader.nxSessionDate.Year, pNxCoreMessage->coreHeader.nxSessionDate.Month, pNxCoreMessage->coreHeader.nxSessionDate.Day);
 			// Open Interest
 			int oi = category.pnxFields[0].data.i32Bit;
 			char lineBuffer[100];
@@ -205,7 +210,7 @@ void NxCoreTradeReader::ProcessCategoryMsg(const NxCoreSystem* pNxCoreSys, const
 				,
 
 				RECORD_TYPE_OI,
-				(int)(date.Year % 100), (int)date.Month, (int)date.Day,
+				(int)(oi_date.Year % 100), (int)oi_date.Month, (int)oi_date.Day,
 				symbol.c_str(),
 				oi);
 

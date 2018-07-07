@@ -9,6 +9,10 @@ public class CommonConstants {
 	
 	public final static int RECORD_TYPE_OI = 2;
 	
+	public final static int RECORD_TYPE_TRADE_FINISH = 3;
+	
+	public final static int RECORD_TYPE_OI_FINISH = 4;
+	
 	// --------------------- Trading Condition ----------------
 	public final static int TRADE_CONDITION_SPREAD = 35;
 	

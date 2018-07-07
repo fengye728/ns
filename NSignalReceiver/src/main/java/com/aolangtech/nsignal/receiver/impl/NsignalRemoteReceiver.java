@@ -74,13 +74,10 @@ public class NsignalRemoteReceiver implements NSignalReceiver {
 		
 		private OptionTradeHandlerContext handler;
 		
-		private long readCount;
-		
 	    @Override
 	    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 	        String record = (String) msg;
-	        if(handler.handleOneLineRecord(record))
-	        	++readCount;
+	        handler.handleOneLineRecord(record);
 	    }
 	    
 	    @Override
@@ -92,7 +89,6 @@ public class NsignalRemoteReceiver implements NSignalReceiver {
 
 	    @Override
 	    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-	    	complete(ctx.channel().remoteAddress().toString());
 	    	logger.info("Inactive Channel " + ctx.channel().remoteAddress());
 	    }
 	    @Override
@@ -103,15 +99,8 @@ public class NsignalRemoteReceiver implements NSignalReceiver {
 	    
 	    protected void init() {
 	    	handler = new OptionTradeHandlerContext();
-	    	readCount = 0;
 	    }
 	    
-	    protected void complete(String remoteAddress) {
-	    	logger.info("Load records from " + remoteAddress + " -Count: " + readCount);
-	    	handler.processForMap();
-	    	// persist all records
-	    	handler.persist();
-	    }
 		
 	}
 

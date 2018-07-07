@@ -165,5 +165,7 @@ def batch_search(symbol, event_day, expiration, strike, call_put):
         print(path, 'already exists')
 
 # search
+
 # stock, event_day, expiration, strike, call_put
 batch_search('VALE', 180516, 200117, 15, 'P')
+

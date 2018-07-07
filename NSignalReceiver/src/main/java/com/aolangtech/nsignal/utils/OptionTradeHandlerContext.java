@@ -55,6 +55,12 @@ public class OptionTradeHandlerContext{
 		case CommonConstants.RECORD_TYPE_OI:
 			status = handleOI(record);
 			break;
+		case CommonConstants.RECORD_TYPE_TRADE_FINISH:
+			persistTrade();
+			break;
+		case CommonConstants.RECORD_TYPE_OI_FINISH:
+			persistOI();
+			break;
 		}
 		
 		return status;
@@ -124,25 +130,36 @@ public class OptionTradeHandlerContext{
 	}
 	
 	/**
-	 * Persist all records in map into database.
+	 * Persist all records of open interest into database
+	 * @return
+	 */
+	public int persistOI() {
+		int oiRecordCount = optionOIService.insertList(new ArrayList<OptionOIModel>(oiMap.values()));
+		logger.info("Persist OI records success - Date of "+ OptionOIServiceImpl.getExpectedOIEventDay(oiMap.values()) + ". Count: " + oiRecordCount);
+		return oiRecordCount;
+	}
+	/**
+	 * Persist all records of trades into database.
 	 * 
 	 * @return The number of records persisted.
 	 */
-	public int persist() {
-		int oiRecordCount = optionOIService.insertList(new ArrayList<OptionOIModel>(oiMap.values()));
-		logger.info("Persist OI records success - Date of "+ OptionOIServiceImpl.getExpectedOIEventDay(oiMap.values()) + ". Count: " + oiRecordCount);
+	public int persistTrade() {
+		// tagging trades
+		tagTrade();
+		
 		int tradeRecordCount = optionTradeService.insertByMap(tradeMap);
 		logger.info("Persist trade records success - Date of "+ getOptionTradeDate() + ". Count: " + tradeRecordCount);
-		return oiRecordCount + tradeRecordCount;
+		return tradeRecordCount;
 	}
 	
 	/**
-	 * Process all lists in map when full data set is in map.
+	 * Process all trades for tagging.
 	 * 
 	 */
-	public void processForMap() {
-
+	public void tagTrade() {
+		// spread tag
 		combineTradeLeg();
+		
 		setBigTradeFlag();
 	}
 
