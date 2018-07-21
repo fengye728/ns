@@ -134,8 +134,9 @@ public class OptionTradeHandlerContext{
 	 * @return
 	 */
 	public int persistOI() {
-		int oiRecordCount = optionOIService.insertList(new ArrayList<OptionOIModel>(oiMap.values()));
-		logger.info("Persist OI records success - Date of "+ OptionOIServiceImpl.getExpectedOIEventDay(oiMap.values()) + ". Count: " + oiRecordCount);
+		ArrayList<OptionOIModel> oiList = new ArrayList<OptionOIModel>(oiMap.values());
+		int oiRecordCount = optionOIService.insertList(oiList);
+		logger.info("Persist OI records success - Date of "+ oiList.get(oiList.size() -1).getEventDay() + ". Count: " + oiRecordCount);
 		return oiRecordCount;
 	}
 	/**

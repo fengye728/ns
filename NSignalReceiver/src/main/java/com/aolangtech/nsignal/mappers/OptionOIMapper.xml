@@ -55,7 +55,7 @@
   </delete>
   
   
-  <insert id="insert" keyColumn="id" >
+  <insert id="insertWithoutConflict" keyColumn="id" >
   	INSERT INTO ${tableName}(
 		<include refid="BaseColumnList"></include>
 	)
@@ -68,6 +68,7 @@
         #{item.strike},
         #{item.openInterest}
         )
+    ON CONFLICT ON CONSTRAINT ${tableName}_unique DO NOTHING
   </insert>
     
   <insert id="insertList" keyColumn="id" >

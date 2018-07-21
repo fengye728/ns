@@ -192,7 +192,7 @@ void NxCoreTradeReader::ProcessCategoryMsg(const NxCoreSystem* pNxCoreSys, const
 	{
 	case 67:
 		// filter open interest
-		if (oi_date.NDays < cur_date.NDays - OPTION_MAX_TRADE_GAP || oi_date.NDays >= cur_date.NDays)
+		if (oi_date.NDays < cur_date.NDays - OPTION_MAX_TRADE_GAP || oi_date.NDays > cur_date.NDays)
 		{
 			break;
 		}

@@ -1,9 +1,9 @@
 package com.aolangtech.nsignal.services.impl;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import org.apache.ibatis.session.SqlSession;
 
@@ -40,22 +40,18 @@ public class OptionOIServiceImpl implements OptionOIService {
 	}
 	
 	/**
-	 * Get expected oi event_day
+	 * Get quarters contained.
 	 * 
 	 * @param collection
 	 * @return
 	 */
-	public static int getExpectedOIEventDay(Collection<OptionOIModel> collection) {
-		int maxEventDay = 0;
-		Map<Integer, Long> collect = collection.stream().collect(Collectors.groupingBy(OptionOIModel::getEventDay, Collectors.counting()));
-		Long maxCount = 0L;
-		for(Integer eventDay : collect.keySet()) {
-			if(collect.get(eventDay) > maxCount) {
-				maxEventDay = eventDay;
-				maxCount = collect.get(eventDay);
-			}
+	public static Set<String> getContainQuarters(Collection<OptionOIModel> collection) {
+		Set<String> quarters = new HashSet<>();
+		
+		for( OptionOIModel item : collection) {
+			quarters.add(CommonUtil.getQuarterByDay(item.getEventDay()));
 		}
-		return maxEventDay;
+		return quarters;
 	}
 	
 	/**
@@ -68,28 +64,25 @@ public class OptionOIServiceImpl implements OptionOIService {
 			return 0;
 		}
 		else {
-			// filter oi records
-			final int targetEventDay = getExpectedOIEventDay(list);
-			list = list.stream().filter( oiModel -> oiModel.getEventDay() >= targetEventDay).collect(Collectors.toList());
-
+			
 			// create table if not exists
 			OptionOIMapper mapper = this.openMapper();
-			String tableName = oiTablePrefix + CommonUtil.getQuarterByDay(targetEventDay);
-			mapper.createTable(tableName);
-			
-			// clear old records of specified day
-			mapper.deleteByEventDay(tableName, targetEventDay);
+			Set<String> quarters = getContainQuarters(list);
+			for(String quarter : quarters) {
+				String tableName = oiTablePrefix + quarter;
+				mapper.createTable(tableName);
+				session.commit();
+			}
 			this.closeMapper();
 			
 			// insert records
 			mapper = this.openMapper();
 			int count = 0;
 			int failCount = 0;
-			
 			for(count = 0; count < list.size(); count++) {
 				try{
-					
-					mapper.insert(tableName, list.get(count));
+					String tableName = oiTablePrefix + CommonUtil.getQuarterByDay(list.get(count).getEventDay());
+					mapper.insertWithoutConflict(tableName, list.get(count));
 					session.commit();
 				} catch (Exception ex) {
 					session.rollback();

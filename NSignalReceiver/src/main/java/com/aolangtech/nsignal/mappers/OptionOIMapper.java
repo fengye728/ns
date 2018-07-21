@@ -12,7 +12,7 @@ public interface OptionOIMapper {
 	
 	int deleteByEventDay(@Param("tableName") String tableName, @Param("eventDay") Integer eventDay);
 	
-	int insert(@Param("tableName") String tableName, @Param("item") OptionOIModel item);
+	int insertWithoutConflict(@Param("tableName") String tableName, @Param("item") OptionOIModel item);
 	
 	int insertList(@Param("tableName") String tableName, @Param("recordList") List<OptionOIModel> recordList);
 	

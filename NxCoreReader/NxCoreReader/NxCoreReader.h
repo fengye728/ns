@@ -13,7 +13,7 @@
 #define	RECORD_TYPE_OI_FINISH		4
 
 // End time of message
-#define TIME_OI_END_MS		10800000		// 3 * 60 * 60 * 1000
+#define TIME_OI_END_MS		34200000		// 9.5 * 60 * 60 * 1000
 #define TIME_TRADE_END_MS	57600000				// 16 * 60 * 60 * 1000
 
 class NxCoreReader
