@@ -24,7 +24,7 @@ public class ScheduledTask extends TimerTask{
 	public void run() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		
-		output("Execute:" + command + " at " +  sdf.format(new Date()));
+		output("Execute:" + command + " at " + sdf.format(new Date()));
 		BufferedReader reader = null;
 		try {
 			// execute command
@@ -35,13 +35,13 @@ public class ScheduledTask extends TimerTask{
 			InputStream in = processor.getInputStream();
 			reader = new BufferedReader(new InputStreamReader(in));
 		
-			String line = null;
+//			String line = null;
+//			
+//			while((line = reader.readLine()) != null) {
+//				output("[" + command + "]:\t" + line);
+//			}
 			
-			while((line = reader.readLine()) != null) {
-				output("[" + command + "]:\t" + line);
-			}
-			
-			output("--- " + command + " Completed!");
+			output("Completed: " + command + " at " + sdf.format(new Date()));
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		} finally {

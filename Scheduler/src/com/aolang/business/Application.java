@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -51,24 +52,17 @@ public class Application {
 	                }  
 	            }  
 	        }
-	    
-	     
-	 
-	   for(int j = 1;j<= tasknum/2;j++) {
-		   
-		   String task = "task" + j;
-		   String temptime = map.get(task+".time");
-		   String tempcommand = map.get(task+".command");
-		   String startDate[] = temptime.split(" ");
-		   ScheduledTask tempTask = new ScheduledTask(startDate[0]+" "+startDate[1], tempcommand , Integer.parseInt(startDate[2]));
-		   tasks.add(tempTask);
-		  		   
-	   }
-	      
-		
-		
-		
-		return tasks;
+	       
+		   for(int j = 1;j<= tasknum/2;j++) {
+			   
+			   String task = "task" + j;
+			   String temptime = map.get(task+".time");
+			   String tempcommand = map.get(task+".command");
+			   String startDate[] = temptime.split(" ");
+			   ScheduledTask tempTask = new ScheduledTask(startDate[0]+" "+startDate[1], tempcommand , Integer.parseInt(startDate[2]));
+			   tasks.add(tempTask);
+		   }
+			return tasks;
 	}
 	
 		
@@ -93,6 +87,10 @@ public class Application {
 	}
 	
 	public static void main(String[] args) {
+		
+		// set timezone
+		TimeZone.setDefault(TimeZone.getTimeZone("America/New_York"));
+		
 		List<ScheduledTask> tasks = generateTaskFromProperties();
 		scheduleTask(tasks);
 		

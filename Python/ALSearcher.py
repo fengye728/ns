@@ -150,22 +150,25 @@ def spread_search(symbol, event_day, sequence_id, path = "."):
     
     
 def batch_search(symbol, event_day, expiration, strike, call_put):
-    PATH_PATTERN = '{0}_{1}_{2}_{3}{4}'
-    path = PATH_PATTERN.format(symbol, event_day, expiration, strike, call_put)
+    try:
+        PATH_PATTERN = '{0}_{1}_{2}_{3}{4}'
+        path = PATH_PATTERN.format(symbol, event_day, expiration, strike, call_put)
 
-    if not os.path.exists(path):
-        os.mkdir(path)
-        option_normal(symbol, event_day, expiration, strike, call_put, path)
-        
-        #quarter_oi(symbol, event_day, expiration, strike, call_put, path)
-        
-        option_milld(symbol, event_day, expiration, strike, call_put, path)
-        print(path, 'search success!')
-    else:
-        print(path, 'already exists')
+        if not os.path.exists(path):
+            os.mkdir(path)
+            option_normal(symbol, event_day, expiration, strike, call_put, path)
+            
+            #quarter_oi(symbol, event_day, expiration, strike, call_put, path)
+            
+            option_milld(symbol, event_day, expiration, strike, call_put, path)
+            print(path, 'search success!')
+        else:
+            print(path, 'already exists')
+    except Exception:
+        conn.rollback()
 
 # search
 
 # stock, event_day, expiration, strike, call_put
-batch_search('VALE', 180516, 200117, 15, 'P')
 
+#batch_search('SNAP', 180625, 200117, 30, 'P')
