@@ -24,7 +24,7 @@ public class OptionTradeHandlerContext{
 	
 	private Map<String, List<OptionTradeModel>> tradeMap = new HashMap<>();;	//  <Stock symbol, List of trade>
 	
-	private Map<String ,OptionOIModel> oiMap = new HashMap<>();					// oi model of <Option_Symbol, oiModel>
+	private List<OptionOIModel> oiList = new ArrayList<>();	
 
 	private OptionTradeService optionTradeService = new OptionTradeServiceImpl();
 	
@@ -100,18 +100,14 @@ public class OptionTradeHandlerContext{
 			return false;
 		
 		OptionOIModel record = OptionOIModel.parse(recordLine);
-		String recordOSymbol = OptionOIModel.parseOptionSymbol(recordLine);
 		if(record == null) {
 			return false;
+		} else {
+			// insert or update oi
+			oiList.add(record);
+			return true;
 		}
 		
-		// insert or update oi
-		if (oiMap.containsKey(recordOSymbol)) {
-			oiMap.get(recordOSymbol).setOpenInterest(record.getOpenInterest());
-		} else {
-			oiMap.put(recordOSymbol, record);
-		}
-		return true;
 	}
 	
 	/**
@@ -134,9 +130,9 @@ public class OptionTradeHandlerContext{
 	 * @return
 	 */
 	public int persistOI() {
-		ArrayList<OptionOIModel> oiList = new ArrayList<OptionOIModel>(oiMap.values());
+		OptionOIModel maxOIEvnetDay = oiList.stream().max((x1, x2) -> x1.getEventDay() - x2.getEventDay()).get();
 		int oiRecordCount = optionOIService.insertList(oiList);
-		logger.info("Persist OI records success - Date of "+ oiList.get(oiList.size() -1).getEventDay() + ". Count: " + oiRecordCount);
+		logger.info("Persist OI records success - Date of "+ maxOIEvnetDay.getEventDay() + ". Count: " + oiRecordCount);
 		return oiRecordCount;
 	}
 	/**
